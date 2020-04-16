@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-后台管理页面</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+<script src="static/bootstrap/js/highcharts.js"></script>
+<script src="static/bootstrap/js/highcharts-zh_CN.js"></script>
+<script src="static/bootstrap/js/exporting.js"></script>
+<style>
+    /*图片标题*/
+    #book_title{
+        position: absolute;
+        top:110px;
+        left: 45%;
+    }
+
+    /*左侧列表*/
+    #title_list{
+        position: absolute;
+        left: 15%;
+    }
+
+    /*页面主题内容*/
+    #title_list_body{
+        position: absolute;
+        left: 25%;
+        top: 200px;
+        width:1200px;
+    }
+
+    /*库存展示标题*/
+    #kc_title{
+        font-family: NSimSun;
+        font-weight: bold;
+        font-size: 30px;
+    }
+
+    /*全局进度条内容*/
+    #kc_body{
+        position: absolute;
+        width: 1000px;
+    }
+
+    /*底部用户统计数据栏*/
+    #users_info{
+        position: absolute;
+        width: 300px;
+        border-style: solid;
+        font-size: 20px;
+        top:450px;
+    }
+
+    /*查书表单位置*/
+    #findBook{
+        position: absolute;
+        width: 1000px;
+        left: 250px;
+        top:-40px;
+    }
+    /*表单按钮位置*/
+    #select_btn{
+        position: absolute;
+        top:35px;
+    }
+
+    /*表单全局属性*/
+    #bookList{
+        position: absolute;
+        top:40px;
+        width: 1000px;
+        left: 100px;
+        font-size: 20px;
+    }
+
+    /*table下选页栏*/
+    #table_info{
+        position: absolute;
+        left: 275px;
+    }
+
+    /*模态框textarea*/
+    #update_describe{
+        width:380px;
+    }
+
+    #book_table{
+        table-layout: fixed;
+        width: 598px;
+    }
+
+</style>
+<body>
+
+
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+<div>
+    <h1 class="text-center" id="book_title"><a href="#" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+
+<!-- Modal修改书籍模态框 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="##" onsubmit="return false" method="post" id="update_submit_form">
+            <table border="1" class="table table-bordered" id="book_table" >
+                <tr>
+                    <th colspan="3" align="center">书籍编号：<input form="update_submit_form" type="text" id="update_book_id" name="bookId" readonly style="border:none;"></th>
+                </tr>
+                <tr>
+                    <td width="20%">书籍名称</td>
+                    <td width="35%"><input form="update_submit_form" class="form-control" type="text" id="update_input_book_name" name="updateName"></td>
+                    <td width="45%" rowspan="4"><img id="picture" width="130px" height="160px"><br>
+                        <button onclick="jumpToSecond()">修改图片</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="1" >书籍作者</td>
+                    <td colspan="1"><input form="update_submit_form" class="form-control" type="text" id="update_input_book_author" name="updateAuthor"></td>
+                </tr>
+                <tr>
+                    <td colspan="1">书籍数量</td>
+                    <td colspan="1"><input form="update_submit_form" class="form-control" type="text" id="update_input_book_count" name="updateCount"></td>
+                </tr>
+                <tr>
+                    <td colspan="1">书籍类型</td>
+                    <td colspan="1">
+                        <!--<span id="update_book_subject"></span>-->
+                        <select form="update_submit_form" class="form-control" id="update_subject" name="subject">
+                            <!--ajax遍历-->
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="1" rowspan="2" align="center">书籍介绍</td>
+                    <td colspan="2" rowspan="2" style="word-break:break-all; "><textarea form="update_submit_form" id="update_describe" name="describe"></textarea></td>
+                </tr>
+            </table>
+            <div class="modal-footer">
+                <span>点击空白处关闭&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button type="submit" class="btn btn-primary" onclick="saveUpdate()">保存更改</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal修改图片模态框 -->
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <form action="##" onsubmit="return false" method="post" id="update_photo_form">
+                <span>上传书籍封面 限制文件格式：jpg、jpeg、gif</span>
+                <input type="file" id="update_picture" name="pictureFile" accept="image/jpeg, image/gif">
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" onclick="savePhoto()">保存更改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal新增书籍模态框 -->
+<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div>
+                <h3>新增书籍</h3>
+            </div>
+            <form action="##" onsubmit="return false" method="post" id="insert_submit_form">
+                <div class="form-group">
+                    <label for="insert_book_name">书籍名称</label>
+                    <input type="text" class="form-control" id="insert_book_name">
+                </div>
+                <div class="form-group">
+                    <label for="insert_book_author">书籍作者</label>
+                    <input type="text" class="form-control" id="insert_book_author">
+                </div>
+                <div class="form-group">
+                    <label for="insert_book_count">库存数量</label>
+                    <input type="text" class="form-control" id="insert_book_count">
+                </div>
+                <div class="form-group">
+                    <label for="insert_book_subject">选择书籍类型</label>
+                    <select class="form-control" id="insert_book_subject">
+                        <option></option>
+                        <!--ajax遍历-->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="insert_book_picture">上传书籍封面</label>
+                    <input type="file" id="insert_book_picture" accept="image/jpeg,image/gif">
+                    <p class="help-block">仅支持jpg、gif格式,大小不能超过10MB</p>
+                </div>
+                <div class="form-group">
+                    <label for="insert_book_describe">书籍简述</label>
+                    <textarea type="text" class="form-control" id="insert_book_describe"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <span>点击空白处关闭&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <button type="submit" class="btn btn-primary" onclick="saveInsert()">保存更改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills nav-stacked">
+        <li id="page1" role="presentation" class="active"><a href="#index" data-toggle="tab">数据统计</a></li>
+        <li id="page2" role="presentation"><a href="#book" data-toggle="tab">图书管理</a></li>
+        <li id="page3" role="presentation"><a href="#talking" data-toggle="tab">信息管理</a></li>
+    </ul>
+</div>
+
+
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="index">
+
+        <div class="row" id="index_main_row1">
+            <div id="kc_title">
+                数据展示
+            </div>
+            <div class="row" id="kc_body">
+                <div id="container" style="min-width:400px;height:400px"></div>
+            </div>
+        </div>
+        <div class="row" id="users_info">
+            <div class="col-md-12">
+                当前注册用户数：<span id="userCount"></span>
+            </div>
+            <div class="col-md-12">
+                当前书籍总数：<span id="bookCount"></span>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="tab-pane fade" id="book">
+        <div class="row" id="findBook">
+            <form action="##" onsubmit="return false" method="post" id="selectBookInfo">
+                <div class="col-xs-2">
+                    <span>筛选书籍类型：</span>
+                    <select class="form-control" id="select_subject" name="subject">
+                        <option></option>
+                        <!--ajax遍历-->
+                    </select>
+                </div>
+                <div class="col-xs-2">
+                    作者关键字：
+                    <input class="form-control" type="text" name="selectAuthor">
+                </div>
+                <div class="col-xs-2">
+                    书籍关键字：
+                    <input class="form-control" type="text" name="selectBookname">
+                </div>
+                <div class="form-group">
+                    <input type="submit" id="select_btn" class="btn btn-info" value="查找" onclick="select_book()">
+                </div>
+            </form>
+        </div>
+
+        <div class="row" id="bookList">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <td>书籍编号</td>
+                    <td>书籍名称</td>
+                    <td>书籍作者</td>
+                    <td>当前库存</td>
+                    <td>书籍类型</td>
+                    <td>操作&nbsp;<button class="btn btn-info" onclick="createNewBook()">新增书籍</button></td>
+                </tr>
+                </thead>
+                <form>
+                <tbody>
+                <!--ajax注入-->
+                </tbody>
+                </form>
+            </table>
+            <div class="row">
+                <div id="table_info">
+                    <button class="btn btn-default btn-sm" id="last_btn" onclick="lastPage()">上一页</button>
+                    <span>当前第<span id="nowPage"></span>页,共<span id="largePage"></span>页</span>
+                    <button class="btn btn-default btn-sm" id="next_btn" onclick="nextPage()">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="talking">
+        <a href="/useradmin.html"><button class="btn btn-success">用户管理</button></a>
+        <hr>
+        <a href="/userreturnbook.html"><button class="btn btn-warning">书籍归还</button></a>
+
+        <a href="/userbookrecord.html"><button class="btn btn-success">借还记录</button></a>
+        <hr>
+        <a href="/userleavetime.html"><button class="btn btn-danger">逾期查询</button></a>
+        <hr>
+        <a href="/advicemessage.html"><button class="btn btn-info">公告管理</button></a>
+    </div>
+
+</div>
+<script type="application/javascript">
+    /*查询结果展示*/
+    /*记录上一次的查询数*/
+    var selNum=0;
+    /*记录最大页*/
+    var theLastPage;
+    /*记录当前页*/
+    var pageNum=1;
+    /*计数器*/
+    var count=0;
+    $(function () {
+        $.ajax({
+            url: "/rootajaxcontroller/gettableinfo",
+            success: function (result) {
+                /*console.log(result);*/
+                /*库存总数*/
+                var bookCounts = result.extend.bookCounts;
+                var tables = result.extend.tableinfo;
+                var jisuanji;
+                var renwen;
+                var lishi;
+                var shengwu;
+                var shuxue;
+                var qita;
+                for (var key in tables) {
+                    if (key == "计算机") {
+                        jisuanji = tables[key] / bookCounts * 100;
+                    } else if (key == "人文科学") {
+                        renwen = tables[key] / bookCounts * 100;
+                    } else if (key == "历史") {
+                        lishi = tables[key] / bookCounts * 100;
+                    } else if (key == "生物") {
+                        shengwu = tables[key] / bookCounts * 100;
+                    } else if (key == "数学") {
+                        shuxue = tables[key] / bookCounts * 100;
+                    } else if (key == "其他") {
+                        qita = tables[key] / bookCounts * 100;
+                    }
+                }
+                Highcharts.chart('container', {
+                    chart: {
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie'
+                    },
+                    title: {
+                        text: '当前系统收录书籍类型及份额'
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        name: '比重',
+                        colorByPoint: true,
+                        data: [{
+                            name: '计算机',
+                            y: jisuanji
+                        }, {
+                            name: '人文科学',
+                            y: renwen
+                        }, {
+                            name: '历史',
+                            y: lishi
+                        }, {
+                            name: '生物',
+                            y: shengwu
+                        }, {
+                            name: '数学',
+                            y: shuxue
+                        }, {
+                            name: '其他',
+                            y: qita
+                        }]
+                    }]
+                });
+            }
+        });
+
+        $.ajax({
+            url: "/rootajaxcontroller/selectAllBooksWithLimit",
+            type: "POST",
+            success: function (result) {
+                for(i=1;i<=selNum;i++){
+                    $("#flag"+(count-1)).remove();
+                }
+                var bookList = result.extend.bookList;
+                selNum = bookList.length;
+                for (i = 0; i < selNum; i++) {
+                    var bookIdTable = $("<td></td>").append(bookList[i].bookId);
+                    var bookNameTable = $("<td></td>").append(bookList[i].bookName);
+                    var bookAuthorTable = $("<td></td>").append(bookList[i].bookAuthor);
+                    var bookCountTable = $("<td></td>").append(bookList[i].bookCount);
+                    var bookSubjectTable = $("<td></td>").append(bookList[i].bookSubject);
+                    var info_btn = $("<a></a>").addClass("btn btn-primary").attr("onclick","openModel("+bookList[i].bookId+")").append("详细信息/编辑");
+                    var delete_btn = $("<a></a>").addClass("btn btn-danger").attr("onclick","deleteBook("+bookList[i].bookId+")").append("删除此书籍");
+                    var buttons = $("<td></td>").append(info_btn).append(" ").append(delete_btn);
+                    $("<tr></tr>").attr("id", "flag" + count)
+                        .append(bookIdTable)
+                        .append(bookNameTable)
+                        .append(bookAuthorTable)
+                        .append(bookCountTable)
+                        .append(bookSubjectTable)
+                        .append(buttons)
+                        .appendTo("#bookList tbody");
+                }
+                count++;
+                $.ajax({
+                    url:"/rootajaxcontroller/getPageNumber",
+                    resultType:"json",
+                    type:"POST",
+                    success:function (result) {
+                        pageNum=result.extend.pageNumber;
+                        $("#pageNumb").remove();
+                        $("<span></span>").attr("id","pageNumb").append(pageNum).appendTo("#nowPage");
+                    }
+                });
+
+                $.ajax({
+                    url:"/rootajaxcontroller/getLastPage",
+                    type:"POST",
+                    resultType:"json",
+                    success:function (result) {
+                        theLastPage=result.extend.lastPage;
+                        $("#lastNumb").remove();
+                        $("<span></span>").attr("id","lastNumb").append(theLastPage).appendTo("#largePage");
+                    }
+                });
+            }
+        });
+
+        $.ajax({
+            url:"/rootajaxcontroller/selectbooksubject",
+            success:function (result) {
+                var subjectList=result.extend.subjectList;
+                for(i=0;i<subjectList.length;i++){
+                    var subject=subjectList[i].subjectName;
+                    $("<option></option>").append(subject).appendTo("#select_subject");
+                }
+            }
+        });
+    });
+
+    /*主页动态数据展示*/
+    $(function () {
+        $.ajax({
+            url:"/rootajaxcontroller/getIndexInformation",
+            success:function (result) {
+                $("#userCount").append(result.extend.indexList[0]);
+                $("#bookCount").append(result.extend.indexList[1]);
+            }
+        });
+    });
+
+    function lastPage(){
+        if(pageNum<=1){
+            pageNum=1;
+        }else{
+            pageNum=pageNum-1;
+        }
+        $.ajax({
+            url:"/rootajaxcontroller/selectAllBooksWithLimit",
+            type:"post",
+            data:{"pageNum":pageNum},
+            success:function (result) {
+                $("#pageNumb").remove();
+                $("<span></span>").attr("id","pageNumb").append(pageNum).appendTo("#nowPage");
+                for(i=1;i<=selNum;i++){
+                    $("#flag"+(count-1)).remove();
+                }
+                var bookList = result.extend.bookList;
+                selNum = bookList.length;
+                for (i = 0; i < selNum; i++) {
+                    var bookIdTable = $("<td></td>").append(bookList[i].bookId);
+                    var bookNameTable = $("<td></td>").append(bookList[i].bookName);
+                    var bookAuthorTable = $("<td></td>").append(bookList[i].bookAuthor);
+                    var bookCountTable = $("<td></td>").append(bookList[i].bookCount);
+                    var bookSubjectTable = $("<td></td>").append(bookList[i].bookSubject);
+                    var info_btn = $("<a></a>").addClass("btn btn-primary").attr("onclick","openModel("+bookList[i].bookId+")").append("详细信息/编辑");
+                    var delete_btn = $("<a></a>").addClass("btn btn-danger").attr("onclick","deleteBook("+bookList[i].bookId+")").append("删除此书籍");
+                    var buttons = $("<td></td>").append(info_btn).append(" ").append(delete_btn);
+                    $("<tr></tr>").attr("id", "flag" + count)
+                        .append(bookIdTable)
+                        .append(bookNameTable)
+                        .append(bookAuthorTable)
+                        .append(bookCountTable)
+                        .append(bookSubjectTable)
+                        .append(buttons)
+                        .appendTo("#bookList tbody");
+                }
+                count++;
+            }
+        });
+    }
+
+    function nextPage(){
+        if(pageNum>=theLastPage){
+            pageNum=theLastPage;
+        }else {
+            pageNum=pageNum+1;
+        }
+        $.ajax({
+            url:"/rootajaxcontroller/selectAllBooksWithLimit",
+            type:"post",
+            data:{"pageNum":pageNum},
+            success:function (result) {
+                $("#pageNumb").remove();
+                $("<span></span>").attr("id","pageNumb").append(pageNum).appendTo("#nowPage");
+                for(i=1;i<=selNum;i++){
+                    $("#flag"+(count-1)).remove();
+                }
+                var bookList = result.extend.bookList;
+                selNum = bookList.length;
+                for (i = 0; i < selNum; i++) {
+                    var bookIdTable = $("<td></td>").append(bookList[i].bookId);
+                    var bookNameTable = $("<td></td>").append(bookList[i].bookName);
+                    var bookAuthorTable = $("<td></td>").append(bookList[i].bookAuthor);
+                    var bookCountTable = $("<td></td>").append(bookList[i].bookCount);
+                    var bookSubjectTable = $("<td></td>").append(bookList[i].bookSubject);
+                    var info_btn = $("<a></a>").addClass("btn btn-primary").attr("onclick","openModel("+bookList[i].bookId+")").append("详细信息/编辑");
+                    var delete_btn = $("<a></a>").addClass("btn btn-danger").attr("onclick","deleteBook("+bookList[i].bookId+")").append("删除此书籍");
+                    var buttons = $("<td></td>").append(info_btn).append(" ").append(delete_btn);
+                    $("<tr></tr>").attr("id", "flag" + count)
+                        .append(bookIdTable)
+                        .append(bookNameTable)
+                        .append(bookAuthorTable)
+                        .append(bookCountTable)
+                        .append(bookSubjectTable)
+                        .append(buttons)
+                        .appendTo("#bookList tbody");
+                }
+                count++;
+            }
+        });
+    }
+
+    function select_book() {
+        $.ajax({
+            url:"/rootajaxcontroller/selectbook",
+            type:"POST",
+            data:$("#selectBookInfo").serialize(),
+            success:function (result) {
+                for(i=0;i<selNum;i++){
+                    $("#flag"+(count-1)).remove();
+                }
+                var bookList=result.extend.list;
+                selNum=bookList.length;
+                if (selNum==0){
+                    alert("查询结束，未找到此条件下的书籍。");
+                    return false;
+                }
+                for(i=0;i<selNum;i++){
+                    var bookIdTable=$("<td></td>").append(bookList[i].bookId);
+                    var bookNameTable=$("<td></td>").append(bookList[i].bookName);
+                    var bookAuthorTable=$("<td></td>").append(bookList[i].bookAuthor);
+                    var bookCountTable=$("<td></td>").append(bookList[i].bookCount);
+                    var bookSubjectTable=$("<td></td>").append(bookList[i].bookSubject);
+                    var info_btn = $("<a></a>").addClass("btn btn-primary").attr("onclick","openModel("+bookList[i].bookId+")").append("详细信息/编辑");
+                    var delete_btn = $("<a></a>").addClass("btn btn-danger").attr("onclick","deleteBook("+bookList[i].bookId+")").append("删除此书籍");
+                    var buttons=$("<td></td>").append(info_btn).append(" ").append(delete_btn);
+                    $("<tr></tr>").attr("id","flag"+count)
+                        .append(bookIdTable)
+                        .append(bookNameTable)
+                        .append(bookAuthorTable)
+                        .append(bookCountTable)
+                        .append(bookSubjectTable)
+                        .append(buttons)
+                        .appendTo("#bookList tbody");
+                }
+                count++;
+                $("#table_info button").remove();
+                $("#table_info span").remove();
+                alert("查询结束！共找到"+selNum+"条数据。");
+            }
+        });
+    }
+
+    /*开启模态框*/
+    /*模态框专用计数器*/
+    var modalCount=0;
+    var removeCount=0;
+    function openModel(bookId){
+        var thisSubject;
+        $("#update_describe").empty();
+        $.ajax({
+            url:"/rootajaxcontroller/getBookById",
+            dataType:"json",
+            data:{"bookId":bookId},
+            success:function (result) {
+                var book=result.extend.book;
+                thisSubject=book.bookSubject;
+                $("#sub1").remove();
+                $("#update_book_id").attr("placeholder",bookId).attr("value",bookId);
+                $("#update_input_book_name").attr("value",book.bookName);
+                $("#update_input_book_author").attr("value",book.bookAuthor);
+                $("#update_input_book_count").attr("value",book.bookCount);
+                $("#picture").attr("src",book.bookPicture);
+                $("#update_picture").attr("value",book.bookPicture);
+                $("<span></span>").attr("id","sub1").append(book.bookSubject).appendTo("#update_book_subject");
+                $("#update_describe").append(book.bookDescribe);
+                $("#myModal").modal("show");
+            }
+        });
+        $.ajax({
+            url:"/rootajaxcontroller/selectbooksubject",
+            success:function(result){
+                var subjectList=result.extend.subjectList;
+                removeCount=subjectList.length;
+                for(i=0;i<=removeCount;i++){
+                    $("#modal"+(modalCount-1)).remove();
+                }
+                for(i=0;i<subjectList.length;i++){
+                    var subject=subjectList[i].subjectName;
+                    if(subject!=thisSubject){
+                        $("<option></option>").attr("id","modal"+modalCount).append(subject).appendTo("#update_subject");
+                    }else{
+                        $("<option></option>").attr("id","modal"+modalCount).attr("selected","selected").append(subject).appendTo("#update_subject");
+                    }
+                }
+                modalCount++;
+            }
+        });
+    }
+
+    function saveUpdate() {
+        var formData = new FormData();
+        formData.append("bookId",$("#update_book_id").val());
+        formData.append("updateName",$("#update_input_book_name").val());
+        formData.append("updateAuthor",$("#update_input_book_author").val());
+        formData.append("updateCount",$("#update_input_book_count").val());
+        formData.append("subject",$("#update_subject").val());
+        formData.append("describe",$("#update_describe").val());
+        $.ajax({
+            url:"/rootajaxcontroller/saveUpdate",
+            type:"POST",
+            data: formData,
+            cache:false,
+            contentType:false,
+            processData:false,
+            success:function () {
+                location.reload();
+                alert("修改已生效");
+            }
+        });
+    }
+
+    function jumpToSecond() {
+        $("#myModal2").modal("show");
+    }
+
+    function savePhoto() {
+        $("#update_picture").empty();
+        var oldPicture=$("#picture").attr("src");
+        var formData=new FormData();
+        /*判空*/
+        var picture=$("#update_picture").val();
+        if(picture!=""){
+            formData.append("bookId",$("#update_book_id").val());
+            formData.append("pictureFile",$("#update_picture")[0].files[0]);
+            formData.append("oldPicture",oldPicture);
+        }else{
+            alert("请选择有效文件");
+            return false;
+        }
+        $.ajax({
+            url:"/rootajaxcontroller/savePicture",
+            data:formData,
+            type:"POST",
+            cache:false,
+            contentType:false,
+            processData:false,
+            success:function(result){
+                var photo=result.extend.pictureName;
+                console.log(photo);
+                alert("图片保存成功！");
+                /*此处photo为虚拟路径*/
+                $("#picture").attr("src",photo);
+                $("#myModal2").modal("hide");
+            }
+        });
+    }
+
+    /*新增书籍-书籍类型专用变量*/
+    var insertSubjectCount=0;
+    var subjectCount=0;
+    function createNewBook() {
+        $.ajax({
+            url:"/rootajaxcontroller/selectbooksubject",
+            success:function (result) {
+                var subjectList=result.extend.subjectList;
+                subjectCount=subjectList.length;
+                for(i=1;i<=subjectCount;i++){
+                    $("#subj"+(insertSubjectCount-1)).remove();
+                }
+                for(i=0;i<subjectCount;i++){
+                    var subject=subjectList[i].subjectName;
+                    $("<option></option>").attr("id","subj"+insertSubjectCount).append(subject).appendTo("#insert_book_subject");
+                }
+                insertSubjectCount++;
+            }
+        });
+        $("#myModal3").modal("show");
+    }
+
+    function saveInsert() {
+        var formData=new FormData();
+        if($("#insert_book_name").val().length==0){
+            alert("书名不能为空！");
+            return false;
+        }else {
+            formData.append("name",$("#insert_book_name").val());
+        }
+        if($("#insert_book_author").val().length==0){
+            alert("作者名不能为空！");
+            return false;
+        }else{
+            formData.append("author",$("#insert_book_author").val());
+        }
+        if (isNaN($("#insert_book_count").val())||$("#insert_book_count").val()==""||$("#insert_book_count").val()==null) {
+            alert("书籍数量不合法");
+            return false;
+        }else{
+            formData.append("count",$("#insert_book_count").val());
+        }
+        if($("#insert_book_subject").val().length==0){
+            alert("请选择书籍类型");
+            return false;
+        }else{
+            formData.append("subject",$("#insert_book_subject").val());
+        }
+        if($("#insert_book_picture")[0].files[0]){
+            formData.append("picture",$("#insert_book_picture")[0].files[0]);
+        }else {
+            alert("请上传书籍封面!");
+            return false;
+        }
+        formData.append("describe",$("#insert_book_describe").val());
+        $.ajax({
+            url:"/rootajaxcontroller/insertNewBook",
+            type:"POST",
+            data: formData,
+            cache:false,
+            contentType:false,
+            processData:false,
+            success:function () {
+                alert("新增操作成功");
+                location.reload();
+            }
+        });
+    }
+
+    function deleteBook(id) {
+        var choose=confirm("确定要删除编号为"+id+"的书籍吗？关于此书的借还记录也会一并清空！");
+        if (choose){
+            $.ajax({
+                url:"/rootajaxcontroller/deleteBook",
+                data:{"bookId":id},
+                type:"POST",
+                success:function (result) {
+                    alert("编号为"+result.extend.id+"的书籍已被删除！");
+                    location.reload();
+                }
+            });
+        } else {
+            return false;
+        }
+
+    }
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

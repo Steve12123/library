@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人页面</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*顶部 个人中心*/
+    #dropdown_list {
+        position: absolute;
+        top: 130px;
+        left: 70%;
+    }
+
+    /*顶部搜索栏*/
+    .form-inline {
+        position: absolute;
+        top: 0px;
+        left: 40%;
+    }
+
+    /*图片下导航栏*/
+    #title_list {
+       position: absolute;
+        left: 30%;
+    }
+
+    /*导航栏的主内容*/
+    #title_list_body{
+        position: absolute;
+        top: 210px;
+        left: 15%;
+    }
+
+    #talking_main{
+        width: 1400px;
+        top:50px;
+    }
+
+    #search_btn{
+        position: absolute;
+        left: 200px;
+    }
+
+    #next_talking{
+        position: relative;
+        top: 60px;
+        text-align: center;
+    }
+
+    #more_btn{
+        position: relative;
+        width: 400px;
+        height: 60px;
+        font-size: 18px;
+        letter-spacing: 8px;
+        border-radius: 5px;
+        background: -webkit-linear-gradient(top, #66B5E6, #2e88c0);
+        border: 1px solid #2576A8;
+        color: #fff;
+    }
+
+    #create_btn{
+        position: absolute;
+        left: 70px;
+    }
+
+    #mine_btn{
+        position: absolute;
+    }
+
+
+</style>
+
+
+<body>
+
+    <img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainuser.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+
+<!-- 个人中心 -->
+<div id="dropdown_list">
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            欢迎：[[${session.loginUser}]]
+            <span class="glyphicon glyphicon-menu-down"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <!--thymeleaf的条件下动态获取session中的值并以rest风格传递给后端-->
+            <li><a th:href="@{/userinfocontroller/userinfo{id}(id=${session.userId})}"><span class="glyphicon glyphicon-home"></span>个人信息</a></li>
+            <li><a th:href="@{/userinfocontroller/mywaiting{id}(id=${session.userId})}"><span class="glyphicon glyphicon-list"></span>我的书籍</a></li>
+            <li><a th:href="@{/userinfocontroller/myinformation{id}(id=${session.userId})}"><span class="glyphicon glyphicon-bullhorn"></span>消息通知</a></li>
+            <li><a href="/logout"><span class="glyphicon glyphicon-remove"></span>登出</a></li>
+        </ul>
+    </div>
+</div>
+
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills">
+        <li id="page1" role="presentation"><a href="/mainuser.html">主页</a></li>
+        <li id="page2" role="presentation"><a href="/booklist.html">书库</a></li>
+        <li id="page3" role="presentation" class="active"><a href="#talking">论坛</a></li>
+    </ul>
+</div>
+    <div id="title_list_body" class="tab-content">
+        <div class="tab-pane fade in active" id="talking">
+            <div class="row">
+                <form class="form-inline" action="##" onsubmit="return false" id="select_talking">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="话题搜索" id="select_key" name="key">
+                    </div>
+                    <button type="submit" id="search_btn" class="btn btn-default" onclick="select_talking()"><span class="glyphicon glyphicon-search"></span></button>
+                </form>
+                <a href="/userTalking/createNewTalking" id="create_btn"><button class="btn btn-success">创建话题</button></a>
+                <a href="/userTalking/mineTalking" id="mine_btn"><button class="btn btn-info">我的话题</button></a>
+                <div id="talking_main" class="col-md-12">
+
+                </div>
+            </div>
+            <div class="row" id="next_talking">
+                <button id="more_btn" onclick="nextPage()">显示更多..</button>
+            </div>
+        </div>
+    </div>
+<script type="application/javascript">
+    /*设置当前页为1*/
+    var thisPage=1;
+    $(function () {
+        $.ajax({
+            url:"/ajaxcontroller/getTalkingList",
+            success:function (result) {
+                var list=result.extend.talkingList;
+                if(!list){
+                    return false;
+                }else{
+                    for(i=0;i<list.length;i++){
+                        var talkingPhoto;
+                       if(!list[i].talkingPhoto){
+                           talkingPhoto=$("<img src='/static/images/down.jpg'>").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
+                       }else{
+                           talkingPhoto=$("<img src="+list[i].talkingPhoto+">").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
+                       }
+                       var talkingTitle=$("<p></p>").css({"font-size":"35px","position":"absolute","left":"200px"}).append("<a href=/userTalking/showTalking?talkingId="+list[i].talkingId+">"+list[i].talkingTitle+"</a>");
+                       var talkingBodySimple=$("<p></p>").css({"font-size":"20px","position":"absolute","left":"200px","top":"50px"}).append(list[i].talkingBookBody);
+                       var userAndTime=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"200px","top":"80px"}).append("<a href=/userTalking/showUser?userId="+list[i].talkingMasterId+">"+list[i].talkingMasterName+"</a>"+"/"+list[i].talkingCreateDate);
+                       var userSubject=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"1000px","top":"105px"}).append(list[i].talkingSubject);
+                       $("<div></div>").addClass("col-md-10 col-md-offset-1").css({"border-style":"groove","margin-bottom":"5px","margin-top":"5px","word-break":"break-all","height":"150px"})
+                           .append(talkingPhoto)
+                           .append(talkingTitle)
+                           .append(talkingBodySimple)
+                           .append(userAndTime)
+                           .append(userSubject)
+                           .appendTo("#talking_main");
+                    }
+                }
+            }
+        });
+    });
+
+    function select_talking() {
+        var insert=$("#select_key").val();
+        if (!insert){
+            alert("请输入查询内容!");
+            return false;
+        } else{
+            $.ajax({
+                url:"/userTalking/selectTalking",
+                data:$("#select_talking").serialize(),
+                success:function (result) {
+                    $("#talking_main").empty();
+                    $("#next_talking").empty();
+                    var list=result.extend.list;
+                    for(i=0;i<list.length;i++){
+                        var talkingPhoto;
+                        if(!list[i].talkingPhoto){
+                            talkingPhoto=$("<img src='/static/images/down.jpg'>").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
+                        }else{
+                            talkingPhoto=$("<img src="+list[i].talkingPhoto+">").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
+                        }
+                        var talkingTitle=$("<p></p>").css({"font-size":"35px","position":"absolute","left":"200px"}).append("<a href=/userTalking/showTalking{"+list[i].talkingId+"}>"+list[i].talkingTitle+"</a>");
+                        var talkingBodySimple=$("<p></p>").css({"font-size":"20px","position":"absolute","left":"200px","top":"50px"}).append(list[i].talkingBookBody);
+                        var userAndTime=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"200px","top":"80px"}).append("<a href=/userTalking/showUser?userId="+list[i].talkingMasterId+">"+list[i].talkingMasterName+"</a>"+"/"+list[i].talkingCreateDate);
+                        var userSubject=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"1000px","top":"105px"}).append(list[i].talkingSubject);
+                        $("<div></div>").addClass("col-md-10 col-md-offset-1").css({"border-style":"groove","margin-bottom":"5px","margin-top":"5px","word-break":"break-all","height":"150px"})
+                            .append(talkingPhoto)
+                            .append(talkingTitle)
+                            .append(talkingBodySimple)
+                            .append(userAndTime)
+                            .append(userSubject)
+                            .appendTo("#talking_main");
+                    }
+                }
+            });
+        }
+    }
+
+    /*加载下一批数据*/
+    function nextPage() {
+        thisPage=thisPage+1;
+        $.ajax({
+            url:"/ajaxcontroller/listPage"+thisPage,
+            success:function (result) {
+                var list=result.extend.talkingList;
+                if(list.length==0){
+                    alert("已经到末尾了！");
+                    return false;
+                }else{
+                    for(i=0;i<list.length;i++){
+                        var talkingPhoto;
+                        if(!list[i].talkingPhoto){
+                            talkingPhoto=$("<img src='/static/images/down.jpg'>").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
+                        }else{
+                            talkingPhoto=$("<img src="+list[i].talkingPhoto+">").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
+                        }
+                        var talkingTitle=$("<p></p>").css({"font-size":"35px","position":"absolute","left":"200px"}).append("<a href=/ajaxcontroller/showTalking"+list[i].talkingId+">"+list[i].talkingTitle+"</a>");
+                        var talkingBodySimple=$("<p></p>").css({"font-size":"20px","position":"absolute","left":"200px","top":"50px"}).append(list[i].talkingBookBody);
+                        var userAndTime=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"200px","top":"80px"}).append("<a href=/userTalking/showUser?userId="+list[i].talkingMasterId+">"+list[i].talkingMasterName+"</a>"+"/"+list[i].talkingCreateDate);
+                        var userSubject=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"1000px","top":"105px"}).append(list[i].talkingSubject);
+                        $("<div></div>").addClass("col-md-10 col-md-offset-1").css({"border-style":"groove","margin-bottom":"5px","margin-top":"5px","word-break":"break-all","height":"150px"})
+                            .append(talkingPhoto)
+                            .append(talkingTitle)
+                            .append(talkingBodySimple)
+                            .append(userAndTime)
+                            .append(userSubject)
+                            .appendTo("#talking_main");
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+
+</body>
+</html>

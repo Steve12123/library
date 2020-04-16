@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人页面</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*顶部 个人中心*/
+    #dropdown_list {
+        position: absolute;
+        top: 130px;
+        left: 70%;
+    }
+
+    /*顶部搜索栏*/
+    .form-inline {
+        position: absolute;
+        top: 0px;
+        left: 45%;
+    }
+
+    /*图片下导航栏*/
+    #title_list {
+       position: absolute;
+        left: 30%;
+    }
+
+    /*导航栏的主内容*/
+    #title_list_body{
+        position: absolute;
+        top: 210px;
+        left: 15%;
+    }
+
+    /*去除ul的默认样式*/
+    #book_go_body ul{
+        list-style: none;
+    }
+
+    /*设置书库页标题显示宽度*/
+    #index2_row{
+        width: 1280px;
+    }
+
+    /*去除最新消息的默认样式*/
+    #ad_body ul{
+        position: absolute;
+        top:50px;
+        list-style: none;
+    }
+
+    /*热门搜索标题字*/
+    #new_select_title{
+        font-family: NSimSun;
+        font-weight: bold;
+        font-size: 30px;
+    }
+
+    /*书库页最新上架标题*/
+    #index2_page_body_title{
+        position: absolute;
+        font-family: Helvetica;
+        top:20px;
+    }
+
+    #index2_page_body_body{
+        position: absolute;
+        top: 70px;
+    }
+
+    /*查书表单位置*/
+    #findBook{
+        position: absolute;
+        width: 1000px;
+        left: 400px;
+        top:-20px;
+    }
+
+    #select_btn{
+        position: absolute;
+        top:35px;
+    }
+
+    /*书库页数据列表主体*/
+    #book_list_body{
+        position: absolute;
+        left: 240px;
+        top:50px;
+    }
+
+    /*表单全局属性*/
+    #bookList{
+        position: absolute;
+        top:15px;
+        width: 840px;
+        left: 80px;
+        font-size: 20px;
+    }
+
+    /*table下选页栏*/
+    #table_info{
+        position: absolute;
+        left: 275px;
+    }
+
+    /*带modal开头的为详细modal的信息样式*/
+    #modal_book_subject{
+        position: absolute;
+        top:50px;
+        font-size: 20px;
+    }
+
+    #modal_book_author{
+        font-size: 20px;
+    }
+
+    #modal_book_count{
+        position: absolute;
+        top:85px;
+        font-size: 20px;
+    }
+
+    #modal_book_describe{
+        position: absolute;
+        top:120px;
+        font-size: 20px;
+    }
+
+</style>
+
+
+<body>
+
+    <img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainuser.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+
+    <!-- Modal书籍详细信息模态框 -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="modal_book_name" align="center" style="font-size: 20px;">书名：</h4>
+                    <h5 class="modal-title" align="center" id="modal_book_id">编号：</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-4 col-xs-offset-1" id="modal_book_author">
+                            作者：
+                        </div>
+                        <div class="col-xs-3 col-xs-offset-2">
+                            <img id="modal_book_picture" width="150px" height="200px">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5 col-xs-offset-1" id="modal_book_subject">
+                            书籍类型：
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5 col-xs-offset-1" id="modal_book_count">
+                            库存数量：
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-xs-offset-1" id="modal_book_describe">
+                            简介：
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-offset-5">
+                    <button type="button" id="buyBookBtn" class="btn btn-success">预订</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- 个人中心 -->
+<div id="dropdown_list">
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            欢迎：[[${session.loginUser}]]
+            <span class="glyphicon glyphicon-menu-down"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <!--thymeleaf的条件下动态获取session中的值并以rest风格传递给后端-->
+            <li><a th:href="@{/userinfocontroller/userinfo{id}(id=${session.userId})}"><span class="glyphicon glyphicon-home"></span>个人信息</a></li>
+            <li><a th:href="@{/userinfocontroller/mywaiting{id}(id=${session.userId})}"><span class="glyphicon glyphicon-list"></span>我的书籍</a></li>
+            <li><a th:href="@{/userinfocontroller/myinformation{id}(id=${session.userId})}"><span class="glyphicon glyphicon-bullhorn"></span>消息通知</a></li>
+            <li><a href="/logout"><span class="glyphicon glyphicon-remove"></span>登出</a></li>
+        </ul>
+    </div>
+</div>
+
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills">
+        <li id="page1" role="presentation"><a href="/mainuser.html">主页</a></li>
+        <li id="page2" role="presentation" class="active"><a href="#book">书库</a></li>
+        <li id="page3" role="presentation"><a href="/talking.html">论坛</a></li>
+    </ul>
+</div>
+
+
+    <div id="title_list_body" class="tab-content">
+        <div class="tab-pane fade in active" id="book">
+            <div class="row" id="index2_row">
+                <div id="findBook">
+                        <form action="##" onsubmit="return false" method="post" id="selectBookInfo">
+                            <div class="col-xs-2">
+                                <span>筛选书籍类型：</span>
+                                <select class="form-control" id="select_subject" name="subject">
+                                    <option></option>
+                                    <!--ajax遍历-->
+                                </select>
+                            </div>
+                            <div class="col-xs-2">
+                                作者关键字：
+                                <input class="form-control" type="text" name="selectAuthor">
+                            </div>
+                            <div class="col-xs-2">
+                                书籍关键字：
+                                <input class="form-control" type="text" name="selectBookname">
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" id="select_btn" class="btn btn-info" value="查找" onclick="select_book()">
+                            </div>
+                        </form>
+                    </div>
+                <div class="col-md-2" id="index2_page_body_title">
+                    <span id="new_select_title">
+                        最新上架
+                    </span>
+                </div>
+                <div class="col-md-3" id="index2_page_body_body" style="font-size: 25px">
+                    <!--ajax注入-->
+                </div>
+                <div class="col-md-5" id="book_list_body">
+                    <div class="row" id="bookList">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <td>书籍编号</td>
+                                <td>书籍名称</td>
+                                <td>书籍作者</td>
+                                <td>当前库存</td>
+                                <td>书籍类型</td>
+                                <td>操作</td>
+                            </tr>
+                            </thead>
+                            <form>
+                                <tbody>
+                                <!--ajax注入-->
+                                </tbody>
+                            </form>
+                        </table>
+                        <div class="row">
+                            <div id="table_info">
+                                <button class="btn btn-default btn-sm" id="last_btn" onclick="lastPage()">上一页</button>
+                                <span>当前第<span id="nowPage"></span>页,共<span id="largePage"></span>页</span>
+                                <button class="btn btn-default btn-sm" id="next_btn" onclick="nextPage()">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    </div>
+
+<script type="application/javascript">
+    /*查询结果展示*/
+    /*记录上一次的查询数*/
+    var selNum=0;
+    /*记录最大页*/
+    var theLastPage;
+    /*记录当前页*/
+    var pageNum=1;
+    /*计数器*/
+    var count=0;
+
+    $(function () {
+        $.ajax({
+            url:"/rootajaxcontroller/selectbooksubject",
+            success:function (result) {
+                var subjectList=result.extend.subjectList;
+                for(i=0;i<subjectList.length;i++){
+                    var subject=subjectList[i].subjectName;
+                    $("<option></option>").append(subject).appendTo("#select_subject");
+                }
+            }
+        });
+        $(function () {
+            /*获取最新上架书*/
+            $.ajax({
+                url:"/ajaxcontroller/getNewUpdateBook",
+                resultType:"jspn",
+                success:function (result) {
+                    var bookList=result.extend.list;
+                    for(i=0;i<bookList.length;i++){
+                        var bookName=bookList[i].bookName;
+                        $("<a></a>").attr("onclick","openModel("+bookList[i].bookId+")").append(bookName).appendTo("#index2_page_body_body");
+                        $("<br>").appendTo("#index2_page_body_body");
+                    }
+                }
+            });
+        });
+    });
+
+    $(function () {
+        $.ajax({
+            url: "/rootajaxcontroller/selectAllBooksWithLimit",
+            type: "POST",
+            success: function (result) {
+                for(i=1;i<=selNum;i++){
+                    $("#flag"+(count-1)).remove();
+                }
+                var bookList = result.extend.bookList;
+                selNum = bookList.length;
+                for (i = 0; i < selNum; i++) {
+                    var bookIdTable = $("<td></td>").append(bookList[i].bookId);
+                    var bookNameTable = $("<td></td>").append(bookList[i].bookName);
+                    var bookAuthorTable = $("<td></td>").append(bookList[i].bookAuthor);
+                    var bookCountTable = $("<td></td>").append(bookList[i].bookCount);
+                    var bookSubjectTable = $("<td></td>").append(bookList[i].bookSubject);
+                    var info_btn = $("<a></a>").addClass("btn btn-primary").attr("onclick","openModel("+bookList[i].bookId+")").append("详细信息");
+                    var buttons = $("<td></td>").append(info_btn);
+                    $("<tr></tr>").attr("id", "flag" + count)
+                        .append(bookIdTable)
+                        .append(bookNameTable)
+                        .append(bookAuthorTable)
+                        .append(bookCountTable)
+                        .append(bookSubjectTable)
+                        .append(buttons)
+                        .appendTo("#bookList tbody");
+                }
+                count++;
+                $.ajax({
+                    url:"/rootajaxcontroller/getPageNumber",
+                    resultType:"json",
+                    type:"POST",
+                    success:function (result) {
+                        pageNum=result.extend.pageNumber;
+                        $("#pageNumb").remove();
+                        $("<span></span>").attr("id","pageNumb").append(pageNum).appendTo("#nowPage");
+                    }
+                });
+
+                $.ajax({
+                    url:"/rootajaxcontroller/getLastPage",
+                    type:"POST",
+                    resultType:"json",
+                    success:function (result) {
+                        theLastPage=result.extend.lastPage;
+                        $("#lastNumb").remove();
+                        $("<span></span>").attr("id","lastNumb").append(theLastPage).appendTo("#largePage");
+                    }
+                });
+            }
+        });
+    });
+
+    function lastPage(){
+        if(pageNum<=1){
+            pageNum=1;
+        }else{
+            pageNum=pageNum-1;
+        }
+        $.ajax({
+            url:"/rootajaxcontroller/selectAllBooksWithLimit",
+            type:"post",
+            data:{"pageNum":pageNum},
+            success:function (result) {
+                $("#pageNumb").remove();
+                $("<span></span>").attr("id","pageNumb").append(pageNum).appendTo("#nowPage");
+                for(i=1;i<=selNum;i++){
+                    $("#flag"+(count-1)).remove();
+                }
+                var bookList = result.extend.bookList;
+                selNum = bookList.length;
+                for (i = 0; i < selNum; i++) {
+                    var bookIdTable = $("<td></td>").append(bookList[i].bookId);
+                    var bookNameTable = $("<td></td>").append(bookList[i].bookName);
+                    var bookAuthorTable = $("<td></td>").append(bookList[i].bookAuthor);
+                    var bookCountTable = $("<td></td>").append(bookList[i].bookCount);
+                    var bookSubjectTable = $("<td></td>").append(bookList[i].bookSubject);
+                    var info_btn = $("<a></a>").addClass("btn btn-primary").attr("onclick","openModel("+bookList[i].bookId+")").append("详细信息");
+                    var buttons = $("<td></td>").append(info_btn);
+                    $("<tr></tr>").attr("id", "flag" + count)
+                        .append(bookIdTable)
+                        .append(bookNameTable)
+                        .append(bookAuthorTable)
+                        .append(bookCountTable)
+                        .append(bookSubjectTable)
+                        .append(buttons)
+                        .appendTo("#bookList tbody");
+                }
+                count++;
+            }
+        });
+    }
+
+    function nextPage(){
+        if(pageNum>=theLastPage){
+            pageNum=theLastPage;
+        }else {
+            pageNum=pageNum+1;
+        }
+        $.ajax({
+            url:"/rootajaxcontroller/selectAllBooksWithLimit",
+            type:"post",
+            data:{"pageNum":pageNum},
+            success:function (result) {
+                $("#pageNumb").remove();
+                $("<span></span>").attr("id","pageNumb").append(pageNum).appendTo("#nowPage");
+                for(i=1;i<=selNum;i++){
+                    $("#flag"+(count-1)).remove();
+                }
+                var bookList = result.extend.bookList;
+                selNum = bookList.length;
+                for (i = 0; i < selNum; i++) {
+                    var bookIdTable = $("<td></td>").append(bookList[i].bookId);
+                    var bookNameTable = $("<td></td>").append(bookList[i].bookName);
+                    var bookAuthorTable = $("<td></td>").append(bookList[i].bookAuthor);
+                    var bookCountTable = $("<td></td>").append(bookList[i].bookCount);
+                    var bookSubjectTable = $("<td></td>").append(bookList[i].bookSubject);
+                    var info_btn = $("<a></a>").addClass("btn btn-primary").attr("onclick","openModel("+bookList[i].bookId+")").append("详细信息");
+                    var buttons = $("<td></td>").append(info_btn);
+                    $("<tr></tr>").attr("id", "flag" + count)
+                        .append(bookIdTable)
+                        .append(bookNameTable)
+                        .append(bookAuthorTable)
+                        .append(bookCountTable)
+                        .append(bookSubjectTable)
+                        .append(buttons)
+                        .appendTo("#bookList tbody");
+                }
+                count++;
+            }
+        });
+    }
+
+    /*开启模态框*/
+    function openModel(bookId) {
+        for(i=1;i<=7;i++){
+            $("#book_info").remove();
+        }
+        $.ajax({
+            url: "/rootajaxcontroller/getBookById",
+            dataType: "json",
+            data: {"bookId": bookId},
+            success: function (result) {
+                var book = result.extend.book;
+                $("<span></span>").attr("id","book_info").append(book.bookName).appendTo("#modal_book_name");
+                $("<span></span>").attr("id","book_info").append(book.bookId).appendTo("#modal_book_id");
+                $("<span></span>").attr("id","book_info").append(book.bookAuthor).appendTo("#modal_book_author");
+                $("<span></span>").attr("id","book_info").append(book.bookCount).appendTo("#modal_book_count");
+                $("<span></span>").attr("id","book_info").append(book.bookSubject).appendTo("#modal_book_subject");
+                $("<span></span>").attr("id","book_info").append(book.bookDescribe).appendTo("#modal_book_describe");
+                $("#modal_book_picture").attr("src",book.bookPicture);
+                $("#buyBookBtn").attr("onclick","checkBookCountAndUserBook("+"[[${session.userId}]]"+","+book.bookId+")");
+                $("#myModal").modal("show");
+            }
+        });
+    }
+
+    /*实时更新书籍数量*/
+    function checkBookCountAndUserBook(userId,bookId) {
+        $.ajax({
+            url:"/ajaxcontroller/getNowBookCount",
+            type:"POST",
+            data:{"bookId":bookId},
+            success:function (result) {
+                if(result.extend.message=="y"){
+                    var choice=confirm("确定借书？");
+                    if(choice==true){
+                        $.ajax({
+                            url:"/ajaxcontroller/bringbook",
+                            type:"POST",
+                            data:{"userId":userId,"bookId":bookId},
+                            success:function (result) {
+                                if(result.extend.message=="success"){
+                                    alert("借书成功！请及时前往图书馆取书。");
+                                    location.reload();
+                                }else{
+                                    alert("借书失败！无法重复预订同一本书！");
+                                }
+                            }
+                        });
+                    }else{
+                        return false;
+                    }
+                }else{
+                    var choose=confirm("当前库存不足,是否预约？");
+                    if(choose==true){
+                        /*未完成 预约的ajax请求*/
+                        alert("预约成功");
+                    }else{
+                        return false;
+                    }
+                }
+            }
+        });
+    }
+
+    function select_book() {
+        $.ajax({
+            url:"/rootajaxcontroller/selectbook",
+            type:"POST",
+            data:$("#selectBookInfo").serialize(),
+            success:function (result) {
+                for(i=0;i<selNum;i++){
+                    $("#flag"+(count-1)).remove();
+                }
+                var bookList=result.extend.list;
+                if (bookList==null){
+                    alert("请输入查询条件");
+                    $("#table_info").remove();
+                    return false;
+                }
+                selNum=bookList.length;
+                for(i=0;i<selNum;i++){
+                    var bookIdTable=$("<td></td>").append(bookList[i].bookId);
+                    var bookNameTable=$("<td></td>").append(bookList[i].bookName);
+                    var bookAuthorTable=$("<td></td>").append(bookList[i].bookAuthor);
+                    var bookCountTable=$("<td></td>").append(bookList[i].bookCount);
+                    var bookSubjectTable=$("<td></td>").append(bookList[i].bookSubject);
+                    var info_btn = $("<a></a>").addClass("btn btn-primary").attr("onclick","openModel("+bookList[i].bookId+")").append("详细信息");
+                    var buttons=$("<td></td>").append(info_btn);
+                    $("<tr></tr>").attr("id","flag"+count)
+                        .append(bookIdTable)
+                        .append(bookNameTable)
+                        .append(bookAuthorTable)
+                        .append(bookCountTable)
+                        .append(bookSubjectTable)
+                        .append(buttons)
+                        .appendTo("#bookList tbody");
+                }
+                count++;
+                $("#table_info button").remove();
+                $("#table_info span").remove();
+                alert("查询结束！共找到"+selNum+"条数据。");
+            }
+        });
+    }
+</script>
+
+
+</body>
+</html>

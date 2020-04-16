@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人信息</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*左侧列表*/
+    #title_list{
+        position: absolute;
+        width: 300px;
+        text-align: center;
+    }
+
+    /*页面主题内容*/
+    #title_list_body{
+        position: absolute;
+        left: 25%;
+        top: 200px;
+        width:1200px;
+    }
+
+
+</style>
+<body>
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainroot.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills nav-stacked">
+        <li id="page1" role="presentation"><a href="/useradmin.html">用户管理</a></li>
+        <li id="page2" role="presentation" class="active"><a href="#information">书籍归还</a></li>
+        <li id="page3" role="presentation"><a href="/userbookrecord.html">消息队列</a></li>
+        <li id="page4" role="presentation"><a href="/userleavetime.html">逾期查询</a></li>
+        <li id="page5" role="presentation"><a href="/advicemessage.html">公告管理</a></li>
+    </ul>
+</div>
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="information">
+        <div class="tab-pane fade in active" id="record_book">
+            <div class="row col-md-3">
+                <form action="##" onsubmit="return false" method="post" id="record_book_form">
+                    <div class="form-group">
+                        <label for="user_id">输入用户账号</label>
+                        <input type="text" class="form-control" id="user_id" name="userId">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-default" onclick="change_user_book()">查询</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div>
+            <table class="table table-bordered" id="show_table">
+                <thead align="center">
+                    <tr>
+                        <td>书籍编号</td>
+                        <td>书籍名称</td>
+                        <td>借阅日期</td>
+                        <td>剩余天数</td>
+                        <td>逾期天数</td>
+                        <td>操作</td>
+                    </tr>
+                </thead>
+                <tbody id="table_body" align="center">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+    function change_user_book() {
+        $("#table_body").empty();
+        $.ajax({
+            url:"/rootajaxcontroller/getUserBookById",
+            data:$("#record_book_form").serialize(),
+            success:function (result) {
+                if(result.extend.bookList==null||result.extend.bookList==""){
+                    alert("未查询到此用户的借书信息!");
+                    return false;
+                }else{
+                    var userBookList=result.extend.bookList;
+                    for(i=0;i<userBookList.length;i++){
+                        var userId=userBookList[i].userId;
+                        var bookId=userBookList[i].bookId;
+                        var bookName=userBookList[i].bookName;
+                        var beginDay=userBookList[i].beginDay;
+                        var lastDay=userBookList[i].readDay;
+                        var outOfDay=0;
+                        if(lastDay<0){
+                            outOfDay=0-lastDay;
+                            lastDay=0;
+                        }
+                        var book_id_td=$("<td></td>").append(bookId);
+                        var book_name_td=$("<td></td>").append(bookName);
+                        var book_beginDay_td=$("<td></td>").append(beginDay);
+                        var book_lastDay_td=$("<td></td>").append(lastDay);
+                        var book_outOfDay_td=$("<td></td>").append(outOfDay);
+
+                        var button=$("<button></button>").addClass("btn btn-info").attr("onclick","return_book("+userId+","+bookId+")").append("归还书籍");
+                        $("<tr></tr>").append(book_id_td)
+                            .append(book_name_td)
+                            .append(book_beginDay_td)
+                            .append(book_lastDay_td)
+                            .append(book_outOfDay_td)
+                            .append(button).appendTo("#table_body");
+                    }
+                }
+            }
+        });
+    }
+
+    function return_book(userId,bookId) {
+        var choice=confirm("确认还书?");
+        if(!choice){
+            return false;
+        }else{
+            $.ajax({
+                url:"/rootajaxcontroller/returnBookByIds",
+                data:{"userId":userId,"bookId":bookId},
+                success:function (result) {
+                    if(result.extend.message=="success"){
+                        alert("操作成功！");
+                        location.reload();
+                    }else{
+                        alert("此书籍已归还,操作失败！");
+                    }
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

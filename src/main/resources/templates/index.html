@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+    <link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+    <script src="static/bootstrap/js/bootstrap.js"></script>
+
+    <style>
+        body {
+            background-image: url('static/images/table1.jpg');
+            background-size: cover;
+            background-repeat:no-repeat;
+            background-attachment:fixed;
+            min-width: 1800px;
+        }
+
+        body #type{
+            color: #ffffff;
+            text-align: center;
+        }
+
+        #login-box {
+            width: 30%;
+            height: auto;
+            margin: 0 auto;
+            margin-top: 10%;
+            text-align: center;
+            background: #00000040;
+            padding: 20px 50px;
+        }
+
+        #login-box h1 {
+            color: #ffffff;
+        }
+
+        #login-box .form .item {
+            margin-top: 15px;
+        }
+
+        #login-box .form .item input {
+            border: 0;
+            border-bottom: 2px solid #ffffff;
+            width: 200px;
+            font-size: 18px;
+            padding: 5px 10px;
+            background: #ffffff00;
+            color: #ffffff;
+        }
+
+        #login-box .check {
+            margin-top: 10px;
+            color: #ffffff;
+        }
+
+        #login-box button {
+            margin-top: 30px;
+        }
+
+        #login-box #reg_btn {
+            margin-top: 0px;
+        }
+
+        #login-box span {
+            font-size: 18px;
+        }
+
+        #register_btn{
+            position: relative;
+            text-align: center;
+            font-size: 20px;
+            text-decoration: none;
+        }
+    </style>
+
+
+
+</head>
+<body>
+<div class="header"><h1 id="type">图书管理系统</h1></div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">用户注册</h4>
+            </div>
+            <div class="modal-body">
+                <form id="register_form" onsubmit="return false" action="##" method="post">
+                    <div class="form-group">
+                        <label>请输入用户名：</label>
+                        <input type="text" class="form-control" placeholder="Name" name="registerName">
+                    </div>
+                    <div class="form-group">
+                        <label>请输入真实姓名：</label>
+                        <input type="text" class="form-control" placeholder="Name" name="registerRealName">
+                    </div>
+                    <div class="form-group">
+                        <div class="radio">
+                            性别：男
+                            <label>
+                                <input type="radio" name="sex" value="男" checked>
+                            </label>
+                            女
+                            <label>
+                                <input type="radio" name="sex" value="女">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>请设置登录密码：</label>
+                        <input type="password" class="form-control" placeholder="Password" name="password">
+                    </div>
+                    <div class="form-group">
+                        <label>再次确认登录密码：</label>
+                        <input type="password" class="form-control" placeholder="Password" name="password1">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="register()">确定注册</button>
+        </div>
+        </div>
+    </div>
+</div>
+<div id="login-box">
+    <h1>Sign in</h1>
+    <form action="/login" method="post">
+    <div class="form">
+        <div class="item">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+            <input type="text" name="username" placeholder="UserID">
+        </div>
+        <div class="item">
+            <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+            <input type="password" name="password" placeholder="Password">
+        </div>
+    </div>
+        <div class="check">
+        用户<input type="radio" name="checkbox" value="user" checked>&nbsp;
+        管理员<input type="radio" name="checkbox" value="root">
+        </div>
+    <input type="submit" class="btn btn-success" id="login_btn" value="登录">
+</form>
+    <div id="errInfo"><p style="color: red" th:text="${loginErrInfoToUser}" th:if="${not #strings.isEmpty(loginErrInfoToUser)}"></p></div>
+</div>
+<div id="register_btn">
+    <a href="#" data-toggle="modal" data-target="#myModal" style="color: orangered">注册新用户</a>
+</div>
+<script type="application/javascript">
+    /*注册验证*/
+    function register(){
+        $.ajax({
+            url:"/register",
+            type:"POST",
+            data:$("#register_form").serialize(),
+            success:function(result){
+                /*console.log(result);*/
+                if(result.message=="处理失败"){
+                    alert(result.extend.errInfo);
+                }else{
+                    alert(result.extend.successInfo);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

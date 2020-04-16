@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人页面</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*图片下导航栏*/
+    #title_list {
+        position: absolute;
+        left: 30%;
+    }
+
+    /*导航栏的主内容*/
+    #title_list_body{
+        position: absolute;
+        top: 210px;
+        left: 15%;
+    }
+
+    #talking_main{
+        width: 1400px;
+        top:50px;
+    }
+
+    #form_title{
+        font-size: 25px;
+    }
+
+    #title{
+        position: relative;
+        width: 400px;
+        text-align: center;
+    }
+
+    #picture{
+        position: relative;
+        width: 200px;
+    }
+
+    #talking_subject{
+        position: relative;
+        width: 200px;
+    }
+
+    #textarea{
+        position: relative;
+        width: 1200px;
+        height: 400px;
+    }
+
+
+</style>
+
+
+<body>
+
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainuser.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+
+<div id="title_list">
+    <ul class="nav nav-pills">
+        <li id="page1" role="presentation" class="active"><a href="/createTalking.html">发布话题</a></li>
+        <li id="page2" role="presentation"><a href="/mineTalking.html">我的话题</a></li>
+    </ul>
+</div>
+
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="talking">
+        <div class="row">
+            <div id="talking_main" class="col-md-12" align="center">
+                <!--ajax自动生成格式 一页最多9个-->
+                <form action="##" onsubmit="return false" method="post">
+                    <label for="title" class="form-group" id="form_title">设置话题标题</label>
+                    <input type="text" class="form-control" id="title" name="title">
+                    <label for="picture" class="form-group" id="form_title">设置话题图片</label>
+                    <input type="file" class="form-control" id="picture" name="picture" accept="image/jpeg">
+                    <label for="picture" class="form-group" id="form_title">选择话题类型</label>
+                    <select class="form-control" id="talking_subject" name="subject">
+                        <!--话题类型遍历-->
+                    </select>
+                    <label for="textarea" class="form-group" id="form_title">主题内容</label>
+                    <textarea class="form-control" id="textarea" name="talkingBody"></textarea>
+                    <button class="btn btn-success" id="save" onclick="saveTalking()">保存并发布</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script type="application/javascript">
+    $(function () {
+        $.ajax({
+            url:"/userTalking/getTalkingSubject",
+            success:function (result) {
+                var list=result.extend.subjectList;
+                for (i=0;i<list.length;i++){
+                    $("<option></option>").append(list[i].subjectName).appendTo("#talking_subject");
+                }
+            }
+        });
+    });
+    
+    function saveTalking() {
+        var choice=confirm("确认发布？");
+        if(!choice){
+            return false;
+        }else{
+            var formDate=new FormData();
+            if($("#title").val()){
+                formDate.append("title",$("#title").val());
+            }else{
+                alert("请输入话题的标题！");
+                return false;
+            }
+            if($("#picture")[0].files[0]){
+                formDate.append("photo",$("#picture")[0].files[0]);
+            }else{
+                alert("有一个好的封面话题会更加吸引人！");
+                return false;
+            }
+            formDate.append("subject",$("#talking_subject").val());
+            if($("#textarea").val()){
+                formDate.append("textarea",$("#textarea").val());
+            }else{
+                alert("请输入话题内容!");
+                return false;
+            }
+            $.ajax({
+                url:"/userTalking/saveTalking",
+                type:"POST",
+                data:formDate,
+                cache:false,
+                contentType:false,
+                processData:false,
+                success:function (result) {
+                    if (result.extend.message=="success"){
+                        alert("话题发布成功！");
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

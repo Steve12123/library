@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人页面</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*图片下导航栏*/
+    #title_list {
+        position: absolute;
+        left: 30%;
+    }
+
+    /*导航栏的主内容*/
+    #title_list_body{
+        position: absolute;
+        top: 210px;
+        left: 15%;
+    }
+
+    #talking_main{
+        width: 1400px;
+        top:50px;
+    }
+
+
+</style>
+
+
+<body>
+
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainuser.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+
+<div id="title_list">
+    <ul class="nav nav-pills">
+        <li id="page1" role="presentation"><a href="/createTalking.html">发布话题</a></li>
+        <li id="page2" role="presentation" class="active"><a href="/mineTalking.html">我的话题</a></li>
+    </ul>
+</div>
+
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="talking">
+        <div class="row">
+            <div id="talking_main" class="col-md-12">
+                <!--ajax自动生成格式 一页最多9个-->
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+<script type="application/javascript">
+    $(function () {
+        $.ajax({
+            url:"/userTalking/getUserTalking",
+            success:function (result) {
+                var list=result.extend.talkingList;
+                for(i=0;i<list.length;i++){
+                    var talkingPhoto;
+                    if(!list[i].talkingPhoto){
+                        talkingPhoto=$("<img src='/static/images/down.jpg'>").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
+                    }else{
+                        talkingPhoto=$("<img src="+list[i].talkingPhoto+">").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
+                    }
+                    var talkingTitle=$("<p></p>").css({"font-size":"35px","position":"absolute","left":"200px"}).append("<a href=/userTalking/showTalking?talkingId="+list[i].talkingId+">"+list[i].talkingTitle+"</a>");
+                    var talkingBodySimple=$("<p></p>").css({"font-size":"20px","position":"absolute","left":"200px","top":"50px"}).append(list[i].talkingBookBody);
+                    var userAndTime=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"200px","top":"80px"}).append(list[i].talkingMasterName+"</a>"+"/"+list[i].talkingCreateDate);
+                    var userSubject=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"1000px","top":"105px"}).append(list[i].talkingSubject);
+                    var update_btn=$("<button></button>").addClass("btn btn-warning").css({"font-size":"20px","position":"absolute","left":"1000px","top":"55px"}).attr("onclick","deleteTalking("+list[i].talkingId+")").append("删除");
+                    $("<div></div>").addClass("col-md-10 col-md-offset-1").css({"border-style":"groove","margin-bottom":"5px","margin-top":"5px","word-break":"break-all","height":"150px"})
+                        .append(talkingPhoto)
+                        .append(talkingTitle)
+                        .append(talkingBodySimple)
+                        .append(userAndTime)
+                        .append(userSubject)
+                        .append(update_btn)
+                        .appendTo("#talking_main");
+                    }
+                }
+            });
+        });
+
+    /*删除功能*/
+    function deleteTalking(id) {
+        var choice=confirm("确定删除此话题吗？");
+        if (!choice){
+            return false;
+        } else{
+            $.ajax({
+                url:"/userTalking/deleteTalkingById",
+                data:{"id":id},
+                success:function (result) {
+                    if(result.extend.message=="success"){
+                        alert("操作成功！");
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+
+</script>
+
+</body>
+</html>

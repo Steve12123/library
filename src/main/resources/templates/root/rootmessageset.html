@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人信息</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*左侧列表*/
+    #title_list{
+        position: absolute;
+        width: 300px;
+        text-align: center;
+    }
+
+    /*页面主题内容*/
+    #title_list_body{
+        position: absolute;
+        left: 25%;
+        top: 200px;
+        width:1200px;
+    }
+
+    #advBody{
+        position: absolute;
+        left: -50px;
+    }
+
+    #adv_title, #act_title_title{
+        font-size: 25px;
+    }
+
+    #adv{
+        width: 550px;
+        height: 200px;
+    }
+
+    #actBody{
+        position: absolute;
+        left: 550px;
+    }
+
+    #act_body{
+        width: 550px;
+        height: 150px;
+    }
+
+
+
+</style>
+<body>
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainroot.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills nav-stacked">
+        <li id="page1" role="presentation"><a href="/useradmin.html">用户管理</a></li>
+        <li id="page2" role="presentation"><a href="/userreturnbook.html">书籍归还</a></li>
+        <li id="page3" role="presentation"><a href="/userbookrecord.html">消息队列</a></li>
+        <li id="page4" role="presentation"><a href="/userleavetime.html">逾期查询</a></li>
+        <li id="page5" role="presentation" class="active"><a href="#information">公告管理</a></li>
+    </ul>
+</div>
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="information">
+        <div id="advBody">
+            <form action="##" onsubmit="return false" method="post" id="adv_form">
+                <div class="form-group">
+                    <label id="adv_title">公告板信息编写</label>
+                    <br>
+                    <label for="title" id="title_name">标题</label>
+                    <input type="text" class="form-control" name="advTitle" id="title" style="width: 550px;">
+                    <label for="adv" id="body_name">内容</label>
+                    <textarea class="form-control" id="adv" name="advBody"></textarea>
+                </div>
+                <div class="form-group" align="center">
+                    <button class="btn btn-default" onclick="adv_form()">保存修改</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="actBody">
+            <form action="##" onsubmit="return false" method="post" id="act_form">
+                <div class="form-group">
+                    <label id="act_title_title">活动编辑</label>
+                    <br>
+                    <label for="act_title" id="act_name_title">标题</label>
+                    <input type="text" class="form-control" name="advTitle" id="act_title" style="width: 550px;">
+                    <label id="act_picture_title">活动图片</label>
+                    <input type="file" name="advPicture" id="act_picture" accept="image/jpeg">
+                    <label for="act_body" id="act_body_title">内容</label>
+                    <textarea class="form-control" id="act_body" name="advBody"></textarea>
+                </div>
+                <div class="form-group" align="center">
+                    <button class="btn btn-default" onclick="act_form()">保存修改</button>
+                    <button class="btn btn-info" onclick="show">往期活动</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+    function adv_form() {
+        var choice=confirm("公告一旦发布将不可调整");
+        if(!choice){
+            return false;
+        }else{
+            if (!$("#title").val()){
+                alert("请输入有效标题！");
+                return false;
+            }
+            if (!$("#adv").val()){
+                alert("公告内容不能为空！");
+                return false;
+            }
+            $.ajax({
+                url:"/rootajaxcontroller/saveAdv",
+                data:$("#adv_form").serialize(),
+                success:function () {
+                    alert("公告修改成功！");
+                }
+            });
+        }
+    }
+
+    function act_form() {
+        /*存入redis*/
+        if(!$("#act_title").val()){
+            alert("请输入标题!");
+            return false;
+        }
+        if (!$("#act_picture").get(0).files[0]){
+            alert("请选择活动背景图！");
+            return false;
+        }
+        if(!$("#act_body").val()){
+            alert("请编辑活动内容！");
+            return false;
+        }
+        var formDate=new FormData();
+        formDate.append("advTitle",$("#act_title").val());
+        formDate.append("advPicture",$("#act_picture")[0].files[0]);
+        formDate.append("advBody",$("#act_body").val());
+        $.ajax({
+            url:"/rootajaxcontroller/saveActive",
+            type:"POST",
+            data:formDate,
+            cache:false,
+            contentType:false,
+            processData:false,
+            success:function () {
+                alert("存储成功！");
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人信息</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*左侧列表*/
+    #title_list{
+        position: absolute;
+        width: 300px;
+        text-align: center;
+    }
+
+    /*页面主题内容*/
+    #title_list_body{
+        position: absolute;
+        left: 25%;
+        top: 200px;
+        width:1200px;
+    }
+
+
+</style>
+<body>
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainroot.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills nav-stacked">
+        <li id="page1" role="presentation" class="active"><a href="#information">用户管理</a></li>
+        <li id="page2" role="presentation"><a href="/userreturnbook.html">书籍归还</a></li>
+        <li id="page3" role="presentation"><a href="/userbookrecord.html">消息队列</a></li>
+        <li id="page4" role="presentation"><a href="/userleavetime.html">逾期查询</a></li>
+        <li id="page5" role="presentation"><a href="/advicemessage.html">公告管理</a></li>
+    </ul>
+</div>
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="information">
+        用户管理
+    </div>
+</div>
+<script type="application/javascript">
+
+</script>
+</body>
+</html>

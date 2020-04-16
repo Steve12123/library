@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+    <link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+    <script src="static/bootstrap/js/bootstrap.js"></script>
+    <script src="static/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        body {background-image:url('static/images/table1.jpg');background-size: cover;background-repeat:no-repeat;}
+    </style>
+
+</head>
+<body>
+<br>
+<div class="row">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4"><h1>学生信息管理平台</h1></div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 col-md-offset-5">
+                <h2>学生端登录页<small><a href="">教师端登录</a></small></h2>
+            </div>
+        </div>
+        <form class="form-horizontal" action="" method="post">
+            <div class="form-group">
+                <label for="inputEmail3" class="col-sm-2 col-md-offset-3 control-label">学生ID:</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="sId" placeholder="请输入四位学生id" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword3" class="col-sm-2 col-md-offset-3 control-label">登录密码:</label>
+                <div class="col-sm-3">
+                    <input type="password" class="form-control" name="sPassword" placeholder="请输入密码" />
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-5 col-sm-10">
+                    <input type="submit" class="btn btn-info" value="登录"/>
+                    <a href="" class="col-md-offset-1 btn btn-default" role="button">注册</a>
+                </div>
+            </div>
+        </form>
+        <p class="text-danger"><div th:text="${hello}"></div></p>
+    </div>
+</div>
+</body>
+</html>

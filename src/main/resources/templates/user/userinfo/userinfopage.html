@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人信息</title>
+</head>
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+<style>
+    body{
+        min-width: 1800px;
+    }
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*左侧列表*/
+    #title_list{
+        position: absolute;
+        width: 300px;
+        text-align: center;
+    }
+
+    /*页面主题内容*/
+    #title_list_body{
+        position: absolute;
+        left: 25%;
+        top: 200px;
+        width:1200px;
+    }
+
+    #user_info_body{
+        font-size: 30px;
+        white-space:nowrap;
+    }
+
+    #picture{
+        position: absolute;
+        left: 600px;
+        top:0px;
+    }
+
+    #update_photo_btn{
+        position: absolute;
+        font-size: 15px;
+        top:200px;
+        left: 30px;
+    }
+
+    #update_userinfo_btn{
+        position: absolute;
+        font-size: 20px;
+        left: 230px;
+        top: 220px;
+    }
+</style>
+<body>
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainuser.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills nav-stacked">
+        <li id="page1" role="presentation" class="active"><a href="#updateinfo">个人信息</a></li>
+        <li id="page2" role="presentation"><a href="/userpassword.html">修改密码</a></li>
+        <li id="page3" role="presentation"><a href="/userwaiting.html">我的书籍</a></li>
+        <li id="page4" role="presentation"><a href="/userinfomation.html">消息通知</a></li>
+    </ul>
+</div>
+
+<!-- Modal书籍详细信息模态框 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modal_book_name" align="center" style="font-size: 20px;">个人信息修改</h4>
+            </div>
+            <div class="modal-body">
+                <form id="change_form" onsubmit="return false" action="##" method="post">
+                    <div class="form-group">
+                        <label>请输入用户名：</label>
+                        <input type="text" class="form-control" placeholder="Name" name="changeName" id="changeName">
+                    </div>
+                    <div class="form-group">
+                        <div class="radio" id="changeSex">
+                            性别：男
+                            <label>
+                                <input type="radio" id="r1" name="sex" value="男">
+                            </label>
+                            女
+                            <label>
+                                <input type="radio" id="r2" name="sex" value="女">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" id="changeSubject" name="subject">
+
+                        </select>
+                    </div>
+
+                </form>
+            </div>
+            <div class="col-md-offset-5">
+                <button type="button" id="change_btn" class="btn btn-success" onclick="changeUserInfo()">确认修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="updateinfo">
+        <div id="user_info_body">
+            <div class="row">
+                <div class="col-xs-3" style="text-align: right">
+                    我的账号：
+                </div>
+                <div class="col-xs-3" style="text-align: left" id="userid">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3" style="text-align: right">
+                    我的用户名：
+                </div>
+                <div class="col-xs-3" style="text-align: left" id="username">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-3" style="text-align: right">
+                   我的真实姓名：
+                </div>
+                <div class="col-xs-3" style="text-align: left" id="realname">
+
+                </div>
+            </div>
+            <div class="row">
+                 <div class="col-xs-3" style="text-align: right">
+                    我的性别：
+                 </div>
+                 <div class="col-xs-3" style="text-align: left" id="sex">
+
+                 </div>
+                </div>
+            <div class="row">
+                <div class="col-xs-3" style="text-align: right">
+                    我的兴趣：
+                </div>
+                <div class="col-xs-3" style="text-align: left" id="subject">
+
+                </div>
+            </div>
+            <div id="picture">
+                <div>
+                    <img id="picture_locate" src="/static/images/StaticPicture.PNG" width="150px" height="200px">
+                </div>
+                <div>
+                    <form action="##" onsubmit="return false" method="post" id="update_photo_btn">
+                    <input type="file" accept="image/jpeg" id="form_picture" value="点击上传照片"/>
+                    <input type="button" onclick="updatePhoto()" value="确认上传">
+                    </form>
+                </div>
+            </div>
+            <div>
+                <button id="update_userinfo_btn" onclick="updateInfo()">修改信息</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+    /*设置全局互通数据*/
+    var user_Id;
+    $(function () {
+        $.ajax({
+            url:"/userinfocontroller/getUserInfo",
+            resultType:"json",
+            success:function (result) {
+                var user=result.extend.user;
+                user_Id=user.userId;
+                $("<span></span>").append(user.userId).appendTo("#userid");
+                $("<span></span>").append(user.userName).appendTo("#username");
+                $("<span></span>").append(user.userRealname).appendTo("#realname");
+                $("<span></span>").append(user.userSubject).appendTo("#subject");
+                $("<span></span>").append(user.userSex).appendTo("#sex");
+            }
+        });
+
+        $.ajax({
+            url:"/userinfocontroller/getUserPhoto",
+            resultType:"json",
+            success:function (result) {
+                var photoname=result.extend.photo;
+                if (photoname=="empty"||photoname==null){
+                    return false;
+                } else{
+                    $("#picture_locate").attr("src",photoname);
+                }
+            }
+        });
+    });
+    function updatePhoto() {
+        var formData=new FormData();
+        formData.append("picture",$("#form_picture")[0].files[0]);
+        $.ajax({
+            url:"/userinfocontroller/savePhoto",
+            type:"POST",
+            data: formData,
+            cache:false,
+            contentType:false,
+            processData:false,
+            success:function (result) {
+                console.log(result);
+                var photoName=result.extend.photo;
+                $("#picture_locate").attr("src",photoName);
+                alert("头像上传成功");
+            }
+        });
+    }
+
+    function updateInfo() {
+        var user_subject;
+        $.ajax({
+            url:"/userinfocontroller/getUserInfo",
+            success:function (result) {
+                var user=result.extend.user;
+                var id=user.userId;
+                if (id!=user_Id){
+                    alert("数据异常！");
+                    location.reload();
+                }
+                var userName=user.userName;
+                $("#changeName").attr("value",userName);
+                var userSex=user.userSex;
+                if(userSex=="男"){
+                    $("#r1").prop("checked",true);
+                    $("#r2").prop("checked",false);
+                }else{
+                    $("#r1").prop("checked",false);
+                    $("#r2").prop("checked",true);
+                }
+                var userSubject=user.userSubject;
+                user_subject=userSubject;
+            }
+        });
+        /*获取书籍类型*/
+        $.ajax({
+            url:"/rootajaxcontroller/selectbooksubject",
+            success:function (result) {
+                var subjectList=result.extend.subjectList;
+                var length=subjectList.length;
+                for(i=0;i<length;i++){
+                    $("#flag").remove();
+                }
+                for(i=0;i<length;i++){
+                    var subject=subjectList[i].subjectName;
+                    if(user_subject==subject){
+                        $("<option></option>").attr("id","flag").attr("selected","selected").append(subject).appendTo("#changeSubject");
+                    }else{
+                        $("<option></option>").attr("id","flag").append(subject).appendTo("#changeSubject");
+                    }
+                }
+            }
+        });
+        /*个人所有信息密码除外*/
+        $("#myModal").modal("show");
+    }
+
+    function changeUserInfo() {
+        $.ajax({
+            url:"/userinfocontroller/changeUserInfo",
+            type:"POST",
+            data:$("#change_form").serialize(),
+            success:function (result) {
+                if (result.extend.message=="success"){
+                    alert("数据更新成功！");
+                    location.reload();
+                } else{
+                    alert(result.extend.message);
+                    return false;
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人信息</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*左侧列表*/
+    #title_list{
+        position: absolute;
+        width: 300px;
+        text-align: center;
+    }
+
+    /*页面主题内容*/
+    #title_list_body{
+        position: absolute;
+        left: 25%;
+        top: 200px;
+        width:1200px;
+    }
+
+
+</style>
+<body>
+<!--用户信息模态框-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body" align="center" style="font-size: 20px">
+                <p>用户信息</p>
+                <p id="user_id"></p>
+                <p id="user_name"></p>
+                <p id="user_realname"></p>
+            </div>
+            <div align="center">
+                <p class="help-block">点击空白处关闭</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainroot.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills nav-stacked">
+        <li id="page1" role="presentation"><a href="/useradmin.html">用户管理</a></li>
+        <li id="page2" role="presentation"><a href="/userreturnbook.html">书籍归还</a></li>
+        <li id="page3" role="presentation"><a href="/userbookrecord.html">消息队列</a></li>
+        <li id="page4" role="presentation" class="active"><a href="#information">逾期查询</a></li>
+        <li id="page5" role="presentation"><a href="/advicemessage.html">公告管理</a></li>
+    </ul>
+</div>
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="information">
+        <div>
+            <table class="table table-bordered" id="user_book_table">
+                <thead align="center">
+                <tr>
+                    <td style="width: 100px">用户ID</td>
+                    <td style="width: 100px">书籍名称</td>
+                    <td style="width: 150px">借书日期</td>
+                    <td style="width: 100px">逾期天数</td>
+                    <td style="width: 100px">操作</td>
+                </tr>
+                </thead>
+                <tbody id="leaving_book_list" align="center">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+    $(function () {
+        $.ajax({
+            url:"/rootajaxcontroller/selectLeavingTimeList",
+            resultType:"json",
+            success:function (result) {
+                var list=result.extend.bookList;
+                console.log(list);
+                if (list.length==0){
+                    return false;
+                }else{
+                    for (i=0;i<list.length;i++){
+                        var userId=$("<td></td>").append(list[i].userId);
+                        var bookName=$("<td></td>").append(list[i].bookName);
+                        var beginDay=$("<td></td>").append(list[i].beginDay);
+                        var leavingDay=$("<td></td>").append(0-list[i].readDay);
+                        var info_btn=$("<button></button>").addClass("btn btn-info btn-sm").attr("onclick","getUserInfo("+list[i].userId+")").append("用户信息");
+                        var warning_btn=$("<button></button>").addClass("btn btn-warning btn-sm").attr("onclick","sendMessage("+list[i].userId+","+list[i].bookId+")").append("提醒");
+                        var btns=$("<td></td>").append(info_btn).append(warning_btn);
+                        $("<tr></tr>").append(userId).append(bookName).append(beginDay).append(leavingDay).append(btns).appendTo("#leaving_book_list");
+                    }
+                }
+            }
+        });
+    });
+
+    function getUserInfo(userId) {
+        $.ajax({
+            url:"/rootajaxcontroller/getUserInfo"+userId,
+            success:function (result) {
+                var user=result.extend.user;
+                $("#user_id").empty();
+                $("#user_id").append("用户ID："+user.userId);
+                $("#user_name").empty();
+                $("#user_name").append("用户名："+user.userName);
+                $("#user_realname").empty();
+                $("#user_realname").append("用户真实姓名："+user.userRealname);
+                $("#myModal").modal("show");
+            }
+        });
+    }
+
+    function sendMessage(userId,bookId) {
+        var choice=confirm("确定发送提醒通知吗？");
+        if (!choice){
+            return false;
+        } else{
+            $.ajax({
+                url:"/rootajaxcontroller/sendMessage",
+                data:{"userId":userId,"bookId":bookId},
+                success:function (result) {
+                    if (result.extend.message=="success"){
+                        alert("通知已成功发出！");
+                    } else{
+                        alert("由于未知的原因，通知发送失败！");
+                        return false;
+                    }
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

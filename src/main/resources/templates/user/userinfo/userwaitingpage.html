@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人信息</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*左侧列表*/
+    #title_list{
+        position: absolute;
+        width: 300px;
+        text-align: center;
+    }
+
+    /*页面主题内容*/
+    #title_list_body{
+        position: absolute;
+        left: 25%;
+        top: 200px;
+        width:1000px;
+    }
+
+    #user_book_table{
+        position: absolute;
+        width: 900px;
+    }
+
+
+</style>
+<body>
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainuser.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills nav-stacked">
+        <li id="page1" role="presentation"><a href="/userinfopage.html">个人信息</a></li>
+        <li id="page2" role="presentation"><a href="/userpassword.html">修改密码</a></li>
+        <li id="page3" role="presentation" class="active"><a href="#waiting">我的书籍</a></li>
+        <li id="page4" role="presentation"><a href="/userinfomation.html">消息通知</a></li>
+    </ul>
+</div>
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="waiting">
+        <div>
+            <table class="table table-bordered" id="user_book_table">
+                <thead align="center">
+                    <tr>
+                        <td style="width: 100px">书籍编号</td>
+                        <td style="width: 100px">名称</td>
+                        <td style="width: 150px">借书日期</td>
+                        <td style="width: 100px">剩余时间(天)</td>
+                        <td style="width: 100px">剩余延期次数</td>
+                        <td style="width: 100px">逾期天数</td>
+                        <td style="width: 100px">操作</td>
+                    </tr>
+                </thead>
+                <tbody id="user_book_list" align="center">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+    $.ajax({
+        url:"/userinfocontroller/getUserBookList",
+        resultType:"json",
+        success:function (result) {
+            var bookList=result.extend.bookList;
+            for(i=0;i<bookList.length;i++){
+                var bookId=bookList[i].bookId;
+                var beginDay=bookList[i].beginDay;
+                var readDay=bookList[i].readDay;
+                var leaveDay=0;
+                if(readDay<0){
+                    leaveDay=0-readDay;
+                    readDay=0;
+                }
+                var book_Name=bookList[i].bookName;
+                var addBookTime=bookList[i].addBookTime;
+                var id=$("<td></td>").append(bookId);
+                var name=$("<td></td>").append(book_Name);
+                var begin_day=$("<td></td>").append(beginDay);
+                var read_day=$("<td></td>").append(readDay);
+                var book_time=$("<td></td>").append(addBookTime);
+                var leave_day=$("<td></td>").append(leaveDay);
+                /*延期按钮*/
+                var add_day_btn=$("<button></button>").addClass("btn btn-success").attr("onclick","addTime("+bookId+")").append("申请延期");
+                    $("<tr></tr>").append(id).append(name).append(begin_day).append(read_day).append(book_time).append(leave_day).append(add_day_btn)
+                        .appendTo("#user_book_list");
+            }
+        }
+    });
+
+    function addTime(bookId) {
+        var choice=confirm("确定要续借编号为"+bookId+"的书籍吗？");
+        if(!choice){
+            return false;
+        }else{
+            $.ajax({
+               url:"/userinfocontroller/getAddBookDayTime",
+               data:{"bookId":bookId},
+               success:function (result) {
+                   var lastCount=result.extend.message;
+                   if (lastCount<1){
+                       alert("延期次数已用完！请在规定时间内归还书籍！");
+                       return false;
+                   }else{
+                       $.ajax({
+                           url:"/userinfocontroller/addBookTime",
+                           data:{"bookId":bookId},
+                           resultType:"json",
+                           success:function (result) {
+                               if(result.extend.message=="success"){
+                                   alert("书籍延期成功！");
+                                   location.reload();
+                               }
+                           }
+                       });
+                   }
+               }
+            });
+        }
+    }
+</script>
+</body>
+</html>

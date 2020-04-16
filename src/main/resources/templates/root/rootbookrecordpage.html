@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人信息</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*左侧列表*/
+    #title_list{
+        position: absolute;
+        width: 300px;
+        text-align: center;
+    }
+
+    /*页面主题内容*/
+    #title_list_body{
+        position: absolute;
+        left: 25%;
+        top: 200px;
+        width:1200px;
+    }
+
+
+</style>
+<body>
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainroot.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills nav-stacked">
+        <li id="page1" role="presentation"><a href="/useradmin.html">用户管理</a></li>
+        <li id="page2" role="presentation"><a href="/userreturnbook.html">书籍归还</a></li>
+        <li id="page3" role="presentation" class="active"><a href="#information">消息队列</a></li>
+        <li id="page4" role="presentation"><a href="/userleavetime.html">逾期查询</a></li>
+        <li id="page5" role="presentation"><a href="/advicemessage.html">公告管理</a></li>
+    </ul>
+</div>
+<div id="title_list_body" class="tab-content">
+    <div class="tab-pane fade in active" id="information">
+        <form action="##" onsubmit="return false" method="post">
+            <div id="select_message">
+                条件筛选
+                &nbsp;
+                <select id="select_title" name="selectTitle">
+                    <option></option>
+                    <option>借书操作</option>
+                    <option>还书操作</option>
+                    <option>逾期通知</option>
+                </select>
+                &nbsp;
+                用户ID：
+                <input type="text" id="select_id" name="selectId">
+                &nbsp;
+                时间
+                <input type="date" id="select_date" name="selectDate">
+                &nbsp;
+                <input type="button" onclick="select_message()" value="筛选">
+            </div>
+        </form>
+        <div id="record_table_body">
+            <table class="table table-hover" style="text-align: center" border="1" id="record_table">
+                <thead>
+                    <tr>
+                        <td width="80px">操作</td>
+                        <td width="100px">时间</td>
+                        <td width="80px">用户ID</td>
+                        <td width="200px">消息内容</td>
+                    </tr>
+                </thead>
+                <tbody id="table_body">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="application/javascript">
+    $(function () {
+        $.ajax({
+            url:"/rootajaxcontroller/getAllBringBooksRecord",
+            success:function (result) {
+                var recordList=result.extend.list;
+                if (recordList.length==0){
+                    $("#record_table_body").empty();
+                    return false;
+                } else{
+                    for (i=0;i<recordList.length;i++){
+                        var messageTitle=$("<td></td>").append(recordList[i].messageTitle);
+                        var messageDate=$("<td></td>").append(recordList[i].messageDate);
+                        var userId=$("<td></td>").append(recordList[i].userId);
+                        var messageBody=$("<td></td>").append(recordList[i].messageBody);
+                        $("<tr></tr>").append(messageTitle).append(messageDate).append(userId).append(messageBody).appendTo("#table_body");
+                    }
+                }
+            }
+        });
+    });
+
+    function select_message() {
+        /*未完成 条件查询功能实现*/
+    }
+</script>
+</body>
+</html>

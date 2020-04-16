@@ -12,5 +12,6 @@ public class Message {
     private Integer userId;
     private String messageTitle;
     private String messageDate;
+    private String messageDatabase;
     private String messageBody;
 }

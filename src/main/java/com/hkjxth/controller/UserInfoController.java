@@ -119,7 +119,7 @@ public class UserInfoController {
     @ResponseBody
     public JsonResult addBookTime(@RequestParam("bookId")Integer bookId){
         userService.addBookTime(userId,bookId);
-        Message message=new Message(null,userId,"书籍延期成功",UtilClass.getDateToDatabase(),"编号为"+bookId+"的书籍延期操作。");
+        Message message=new Message(null,userId,"书籍延期成功",UtilClass.getDateToDatabase(),UtilClass.getDate(),"编号为"+bookId+"的书籍延期操作。");
         userService.saveMessage(message);
         return JsonResult.success().add("message","success");
     }

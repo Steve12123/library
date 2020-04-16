@@ -179,7 +179,7 @@ public class RootListAjaxController {
                                       @RequestParam("bookId")Integer bookId){
         Boolean result=rootDao.returnBookByUserIdAndBookId(userId,bookId);
         if(result){
-            Message message=new Message(null,userId,"还书操作",UtilClass.getDateToDatabase(),"编号为"+bookId+"的书籍已确认收回。");
+            Message message=new Message(null,userId,"还书操作",UtilClass.getDateToDatabase(),UtilClass.getDate(),"编号为"+bookId+"的书籍已确认收回。");
             userDao.saveMessage(message);
             return JsonResult.success().add("message","success");
         }else{
@@ -232,6 +232,17 @@ public class RootListAjaxController {
     public JsonResult sendMessage(@RequestParam("userId")Integer userId,@RequestParam("bookId")Integer bookId){
         rootDao.sendMessage(userId,"逾期通知",UtilClass.getDateToDatabase(),"书籍编号为"+bookId+"的书籍已逾期，请尽快还书！");
         return JsonResult.success().add("message","success");
+    }
+
+    @RequestMapping("/selectRecords")
+    public JsonResult selectRecords(@RequestParam(name = "selectTitle",defaultValue = "")String selectTitle,
+                                    @RequestParam(name = "selectId",defaultValue = "") Integer selectId,
+                                    @RequestParam(name = "selectDate",defaultValue = "") String selectDate) {
+        System.out.println(selectTitle);
+        System.out.println(selectId);
+        System.out.println(selectDate);
+        return JsonResult.success().add("message","success");
+
     }
 
 }

@@ -28,7 +28,7 @@ public class UtilClass {
 
     public static final String getDate(){
         Date date=new Date();
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd");
         String time=simpleDateFormat.format(date);
         return time;
     }

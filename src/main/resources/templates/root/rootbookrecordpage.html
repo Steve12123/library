@@ -52,7 +52,7 @@
 </div>
 <div id="title_list_body" class="tab-content">
     <div class="tab-pane fade in active" id="information">
-        <form action="##" onsubmit="return false" method="post">
+        <form action="##" onsubmit="return false" method="post" name="choose_form" id="choose_form">
             <div id="select_message">
                 条件筛选
                 &nbsp;
@@ -113,6 +113,18 @@
 
     function select_message() {
         /*未完成 条件查询功能实现*/
+        if (!choose_form.selectTitle&&!choose_form.selectId&&!choose_form.selectDate){
+            alert("查询内容不能为空！");
+            return false;
+        } else{
+            $.ajax({
+                url:"/rootajaxcontroller/selectRecords",
+                data:$("#choose_form").serialize(),
+                success:function (result) {
+                    console.log(result);
+                }
+            });
+        }
     }
 </script>
 </body>

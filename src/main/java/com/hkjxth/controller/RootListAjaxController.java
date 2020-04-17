@@ -10,10 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/rootajaxcontroller")
@@ -230,7 +227,7 @@ public class RootListAjaxController {
 
     @RequestMapping("/sendMessage")
     public JsonResult sendMessage(@RequestParam("userId")Integer userId,@RequestParam("bookId")Integer bookId){
-        rootDao.sendMessage(userId,"逾期通知",UtilClass.getDateToDatabase(),"书籍编号为"+bookId+"的书籍已逾期，请尽快还书！");
+        rootDao.sendMessage(userId,"逾期通知",UtilClass.getDateToDatabase(),UtilClass.getDate(),"书籍编号为"+bookId+"的书籍已逾期，请尽快还书！");
         return JsonResult.success().add("message","success");
     }
 
@@ -238,10 +235,17 @@ public class RootListAjaxController {
     public JsonResult selectRecords(@RequestParam(name = "selectTitle",defaultValue = "")String selectTitle,
                                     @RequestParam(name = "selectId",defaultValue = "") Integer selectId,
                                     @RequestParam(name = "selectDate",defaultValue = "") String selectDate) {
-        System.out.println(selectTitle);
-        System.out.println(selectId);
-        System.out.println(selectDate);
-        return JsonResult.success().add("message","success");
+        System.out.println("title:"+selectTitle);
+        System.out.println("selectId = " + selectId);
+        System.out.println("selectDate = " + selectDate);
+        List<Message> set=rootDao.selectMessageWithCondition(selectTitle,selectId,selectDate);
+        System.out.println("set = " + set);
+        if (set!=null){
+            return JsonResult.success().add("messageList",set);
+        }else{
+            return JsonResult.success().add("message","fail");
+        }
+
 
     }
 

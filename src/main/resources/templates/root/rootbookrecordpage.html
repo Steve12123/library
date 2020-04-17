@@ -58,7 +58,7 @@
                 &nbsp;
                 <select id="select_title" name="selectTitle">
                     <option></option>
-                    <option>借书操作</option>
+                    <option>借书通知</option>
                     <option>还书操作</option>
                     <option>逾期通知</option>
                 </select>
@@ -76,7 +76,7 @@
             <table class="table table-hover" style="text-align: center" border="1" id="record_table">
                 <thead>
                     <tr>
-                        <td width="80px">操作</td>
+                        <td width="80px">消息类型</td>
                         <td width="100px">时间</td>
                         <td width="80px">用户ID</td>
                         <td width="200px">消息内容</td>
@@ -116,12 +116,32 @@
         if (!choose_form.selectTitle&&!choose_form.selectId&&!choose_form.selectDate){
             alert("查询内容不能为空！");
             return false;
+
         } else{
             $.ajax({
                 url:"/rootajaxcontroller/selectRecords",
                 data:$("#choose_form").serialize(),
                 success:function (result) {
-                    console.log(result);
+                    if (result.extend.message=="fail"){
+                        alert("未找到符合条件的记录！");
+                        return false;
+                    } else{
+                        var list=result.extend.messageList;
+                        if (list.length==0){
+                            alert("查询结束,未能找到符合条件的记录！");
+                            return false;
+                        } else{
+                            $("#table_body").empty();
+                            for (i=0;i<list.length;i++){
+                                var messageTitle=$("<td></td>").append(list[i].messageTitle);
+                                var messageDate=$("<td></td>").append(list[i].messageDate);
+                                var userId=$("<td></td>").append(list[i].userId);
+                                var messageBody=$("<td></td>").append(list[i].messageBody);
+                                $("<tr></tr>").append(messageTitle).append(messageDate).append(userId).append(messageBody).appendTo("#table_body");
+                            }
+                            alert("查询结束！共找到"+list.length+"条符合条件的记录！");
+                        }
+                    }
                 }
             });
         }

@@ -282,7 +282,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void saveMessage(Message message) {
-        jdbcTemplate.update("insert into message values(default,?,?,?,?)",new Object[]{message.getUserId(),message.getMessageTitle(),message.getMessageDate(),message.getMessageBody()});
+        jdbcTemplate.update("insert into message values(default,?,?,?,?,?)",new Object[]{message.getUserId(),message.getMessageTitle(),message.getMessageDate(),message.getMessageDatabase(),message.getMessageBody()});
     }
 
 }

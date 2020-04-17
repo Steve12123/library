@@ -4,6 +4,7 @@ import com.hkjxth.bean.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 public interface RootDao {
 
@@ -50,6 +51,7 @@ public interface RootDao {
 
     List<UserBookList> getLeavingTimeList();
 
+    void sendMessage(Integer userId, String title, String date, String datebaseTime, String body);
 
-    void sendMessage(Integer userId, String title, String date, String body);
+    List<Message> selectMessageWithCondition(String selectTitle, Integer selectId, String selectDate);
 }

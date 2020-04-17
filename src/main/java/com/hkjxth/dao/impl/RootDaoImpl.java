@@ -261,8 +261,59 @@ public class RootDaoImpl implements RootDao{
     }
 
     @Override
-    public void sendMessage(Integer userId, String title, String date, String body) {
-        jdbcTemplate.update("insert into message values(default,?,?,?,?)",new Object[]{userId,title,date,body});
+    public void sendMessage(Integer userId, String title, String date, String datebaseTime, String body) {
+        jdbcTemplate.update("insert into message values(default,?,?,?,?,?)",new Object[]{userId,title,date,datebaseTime,body});
+    }
+
+    @Override
+    public List<Message> selectMessageWithCondition(String selectTitle, Integer selectId, String selectDate) {
+        List<Message> list=new ArrayList<>();
+        if ((selectTitle==null||selectTitle.equals(""))&&(selectId==null)&&(selectDate==null||selectDate.length()==0)){
+            return null;
+        }else{
+            /*当标题条件不为空时*/
+            if (selectTitle!=null&&!selectTitle.equals("")){
+                List<Message> list1;
+                try{
+                    list1=jdbcTemplate.query("select * from message where message_title=?",new Object[]{selectTitle},new BeanPropertyRowMapper<>(Message.class));
+                }catch (EmptyResultDataAccessException e){
+                    return null;
+                }
+                for (Message message:list1){
+                    Integer userId=message.getUserId();
+                    String date=message.getMessageDatabase();
+                    if ((selectId==null||selectId.equals(userId))&&(selectDate.equals("")||date.equals(selectDate))){
+                         list.add(message);
+                     }
+                }
+            }else{
+                /*当标题条件为空时*/
+                if (selectId!=null&&!selectId.equals("")){
+                    List<Message> list2;
+                    try{
+                        list2=jdbcTemplate.query("select * from message where user_id=?",new Object[]{selectId},new BeanPropertyRowMapper<>(Message.class));
+                    }catch (EmptyResultDataAccessException e){
+                        return null;
+                    }
+                    for (Message message:list2){
+                        String date=message.getMessageDatabase();
+                        if (date.equals("")||date.contains(selectDate)){
+                            list.add(message);
+                        }
+                    }
+                }else{
+                    /*当前两个条件都为空时*/
+                    List<Message> list3;
+                    try{
+                        list3=jdbcTemplate.query("select * from message where message_database=?",new Object[]{selectDate},new BeanPropertyRowMapper<>(Message.class));
+                    }catch (EmptyResultDataAccessException e){
+                        return null;
+                    }
+                    list.addAll(list3);
+                }
+            }
+        }
+        return list;
     }
 
 

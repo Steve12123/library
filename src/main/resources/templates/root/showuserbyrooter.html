@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人页面</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*导航栏的主内容*/
+    #title_list_body{
+        position: absolute;
+        top: 210px;
+        left: 15%;
+    }
+
+    #user_photo{
+        position: relative;
+        left: 350px;
+    }
+    
+    #user_name, #user_id, #user_sex{
+        position: relative;
+        left: 600px;
+        top: -180px;
+        font-size: 30px;
+        text-align: center;
+    }
+
+    #p_book_title, #p_talking_title{
+        font-size: 30px;
+    }
+
+    #user_list{
+        position: relative;
+        width: 600px;
+        left: 400px;
+        text-align: center;
+        top: -140px;
+        width: 600px;
+    }
+</style>
+
+
+<body>
+
+<img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainroot.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+
+<div id="title_list_body" class="tab-content">
+    <div class="row">
+        <img src="/static/images/StaticPicture.PNG" height="180px" width="180px" id="user_photo">
+        <p id="user_id">用户ID：</p>
+        <p id="user_name">用户名称：</p>
+        <p id="user_sex">性别：</p>
+    </div>
+    <div class="row">
+        <div id="user_list">
+            <hr>
+            <p id="p_book_title">TA借过的书籍：</p>
+            <p id="p_book_body">
+
+            </p>
+            <hr>
+            <p id="p_talking_title">TA发布的话题：</p>
+            <p id="p_talking_body">
+
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script type="application/javascript">
+    $(function () {
+        var user=location.search;
+        user.substring(1,user.length);
+        var userId=user.split("=")[1];
+        $.ajax({
+            url:"/userTalking/getUserInfoToShow",
+            data:{"userId":userId},
+            success:function (result) {
+                var user=result.extend.userInfo;
+                if(user=="fail"){
+                    alert("错误！未能查询到此用户信息！");
+                    window.location.href="/talking.html";
+                    return false;
+                }
+                $("<span></span>").append(user.userName).appendTo("#user_name");
+                $("<span></span>").append(userId).appendTo("#user_id");
+                $("<span></span>").append(user.userSex).appendTo("#user_sex");
+                if(user.userPassword){
+                    $("#user_photo").attr("src",user.userPassword);
+                }
+            }
+        });
+
+        $.ajax({
+            url:"/rootajaxcontroller/getUserBookById",
+            data:{"userId":userId},
+            success:function (result) {
+                var bookList=result.extend.bookList;
+                if(bookList.length==0){
+                    $("<p></p>").css("font-size","25px").addClass("help-block").append("暂无记录").appendTo("#p_book_body");
+                }else{
+                    for (i=0;i<bookList.length;i++){
+                        var bookName=bookList[i].bookName;
+                        $("<p></p>").css("font-size","25px").append(bookName).appendTo("#p_book_body");
+                    }
+                }
+            }
+        });
+
+        $.ajax({
+            url:"/rootajaxcontroller/getUserTalkingById",
+            data:{"userId":userId},
+            success:function (result) {
+                var talkingList=result.extend.talkingList;
+                if(talkingList.length==0){
+                    $("<p></p>").css("font-size","25px").addClass("help-block").append("暂无记录").appendTo("#p_talking_body");
+                }else{
+                    for(i=0;i<talkingList.length;i++){
+                        var talkingTitle=talkingList[i].talkingTitle;
+                        $("<p></p>").css("font-size","25px").append(talkingTitle).appendTo("#p_talking_body");
+                        /*未完成 显示的内容带有超链接*/
+                    }
+                }
+            }
+        });
+
+    });
+
+</script>
+</body>
+</html>

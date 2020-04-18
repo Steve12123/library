@@ -32,6 +32,11 @@
         width:1200px;
     }
 
+    #select_div{
+        position: relative;
+        left: 15px;
+    }
+
 
 </style>
 <body>
@@ -52,11 +57,100 @@
 </div>
 <div id="title_list_body" class="tab-content">
     <div class="tab-pane fade in active" id="information">
-        用户管理
+        <div id="select_div">
+            <input type="text" name="userId" id="user_id">
+            <button onclick="selectUser()">ID查询</button>
+        </div>
+        <div class="col-md-10">
+            <table class="table table-hover" border="1" style="text-align: center">
+                <thead>
+                    <tr>
+                        <td width="80px">用户ID</td>
+                        <td width="100px">用户名</td>
+                        <td width="80px">用户真实姓名</td>
+                        <td width="100px">操作</td>
+                    </tr>
+                </thead>
+                <tbody id="list_body">
+
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <script type="application/javascript">
+    $(function () {
+        $.ajax({
+            url:"/rootajaxcontroller/getAllUser",
+            success:function (result) {
+                console.log(result.extend.lastPage);
+                var users=result.extend.userList;
+                for (i=0;i<users.length;i++){
+                    var userId=$("<td></td>").append(users[i].userId);
+                    var userName=$("<td></td>").append(users[i].userName);
+                    var userRealname=$("<td></td>").append(users[i].userRealname);
+                    var update_btn=$("<a></a>").addClass("btn btn-info btn-sm active").attr("href","/rootcontroller/checkUser?userId="+users[i].userId).attr("role","button").append("详细信息");
+                    var delete_btn=$("<button></button>").addClass("btn btn-danger btn-sm").attr("onclick","deleteUser("+users[i].userId+")").append("删除用户");
+                    var lock_btn=$("<button></button>").addClass("btn btn-warning btn-sm").attr("onclick","lockUser("+users[i].userId+")").append("冻结用户");
+                    var btns=$("<td></td>").append(update_btn).append(" ").append(delete_btn).append(" ").append(lock_btn);
+                    $("<tr></tr>").append(userId).append(userName).append(userRealname).append(btns)
+                        .appendTo("#list_body");
+                }
+            }
+        });
+    });
 
+    function selectUser() {
+        var userId=$("#user_id").val();
+        if (!userId){
+            alert("请输入查询条件！");
+            return false;
+        } else if (isNaN(userId)){
+            alert("输入格式非法！");
+            return false;
+        }  else{
+            $.ajax({
+                url:"/rootajaxcontroller/getUserInfo"+userId,
+                success:function (result) {
+                    var userinfo=result.extend.user;
+                    if (userinfo) {
+                        $("#list_body").empty();
+                        var userName=$("<td></td>").append(userinfo.userName);
+                        var userRealname=$("<td></td>").append(userinfo.userRealname);
+                        var update_btn=$("<a></a>").addClass("btn btn-info btn-sm active").attr("href","/rootcontroller/checkUser?userId="+userinfo.userId).attr("role","button").append("详细信息");
+                        var delete_btn=$("<button></button>").addClass("btn btn-danger btn-sm").attr("onclick","deleteUser("+userinfo.userId+")").append("删除用户");
+                        var lock_btn=$("<button></button>").addClass("btn btn-warning btn-sm").attr("onclick","lockUser("+userinfo.userId+")").append("冻结用户");
+                        var btns=$("<td></td>").append(update_btn).append(" ").append(delete_btn).append(" ").append(lock_btn);
+                        $("<tr></tr>").append(userId).append(userName).append(userRealname).append(btns)
+                            .appendTo("#list_body");
+                    }else{
+                        alert("未找到符合条件的数据!");
+                        return false;
+                    }
+
+
+                }
+            });
+        }
+    }
+
+    function deleteUser(userId){
+        var choice=confirm("确定要删除此用户吗？有关的一切信息也将一并删除！");
+        if (!choice){
+            return false;
+        } else{
+            /*删除用户 代码*/
+        }
+    }
+
+    function lockUser(userId) {
+        var choice=confirm("确定要限制此用户吗？该用户将无法正常与系统交互！");
+        if (!choice){
+            return false;
+        } else{
+            /*删除用户 代码*/
+        }
+    }
 </script>
 </body>
 </html>

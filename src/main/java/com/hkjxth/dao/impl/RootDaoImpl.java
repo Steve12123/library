@@ -316,5 +316,16 @@ public class RootDaoImpl implements RootDao{
         return list;
     }
 
+    @Override
+    public List<User> getAllUser(Integer pageNum) {
+        List<User> list=new ArrayList<>();
+        try{
+            list=jdbcTemplate.query("select * from user limit ?,10",new Object[]{pageNum},new BeanPropertyRowMapper<>(User.class));
+        }catch (EmptyResultDataAccessException e){
+             return list;
+        }
+        return list;
+    }
+
 
 }

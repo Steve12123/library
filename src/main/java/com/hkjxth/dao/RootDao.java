@@ -4,7 +4,6 @@ import com.hkjxth.bean.*;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 
 public interface RootDao {
 
@@ -54,4 +53,6 @@ public interface RootDao {
     void sendMessage(Integer userId, String title, String date, String datebaseTime, String body);
 
     List<Message> selectMessageWithCondition(String selectTitle, Integer selectId, String selectDate);
+
+    List<User> getAllUser(Integer pageNum);
 }

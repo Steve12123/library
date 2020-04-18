@@ -38,6 +38,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 registry.addViewController("/mineTalking.html").setViewName("user/usertalking/mytalking");
 
                 registry.addViewController("/showUser.html").setViewName("showuser");
+                registry.addViewController("/showUserByRooter.html").setViewName("root/showuserbyrooter");
             }
 
             /*配置虚拟路径*/

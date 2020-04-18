@@ -235,18 +235,40 @@ public class RootListAjaxController {
     public JsonResult selectRecords(@RequestParam(name = "selectTitle",defaultValue = "")String selectTitle,
                                     @RequestParam(name = "selectId",defaultValue = "") Integer selectId,
                                     @RequestParam(name = "selectDate",defaultValue = "") String selectDate) {
-        System.out.println("title:"+selectTitle);
-        System.out.println("selectId = " + selectId);
-        System.out.println("selectDate = " + selectDate);
-        List<Message> set=rootDao.selectMessageWithCondition(selectTitle,selectId,selectDate);
-        System.out.println("set = " + set);
-        if (set!=null){
-            return JsonResult.success().add("messageList",set);
+        List<Message> list=rootDao.selectMessageWithCondition(selectTitle,selectId,selectDate);
+        if (list!=null){
+            return JsonResult.success().add("messageList",list);
         }else{
             return JsonResult.success().add("message","fail");
         }
+    }
 
+    /*user列表当前页变量*/
+    private static Integer THISPAGENUMTOUSER=1;
+    /*user列表最大页变量*/
+    private static Integer THISLASTPAGENUM;
 
+    @RequestMapping("/getAllUser")
+    public JsonResult getAllUser(@RequestParam(name = "pageNum", defaultValue = "1")Integer pageNum){
+        Integer userCount=rootDao.getAllUsersCount();
+        /*设置最大页*/
+        Integer lastPageUser;
+        if (userCount%10==0){
+            lastPageUser=userCount/10;
+        }else{
+            lastPageUser=userCount/10+1;
+        }
+        if (pageNum<=0){
+            pageNum=1;
+        }
+        if (pageNum>lastPageUser){
+            pageNum=lastPageUser;
+        }
+        THISPAGENUMTOUSER=pageNum;
+        THISLASTPAGENUM=lastPageUser;
+        /*从第一条开始，每页10条数据*/
+        List<User> list=rootDao.getAllUser((pageNum-1)*10);
+        return JsonResult.success().add("userList",list).add("lastPage",lastPageUser);
     }
 
 }

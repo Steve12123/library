@@ -22,6 +22,12 @@ public class RootController {
         return "redirect:/mainroot.html";
     }
 
+    @RequestMapping("/checkUser")
+    public String checkUser(@RequestParam("userId")Integer userId){
+        return "redirect:/showUserByRooter.html?userId="+userId;
+    }
+
+
 
 
 

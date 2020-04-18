@@ -84,6 +84,9 @@ public class LoginController {
         if(registerName==null||registerName.equals("")){
             return JsonResult.fail().add("errInfo","用户名非法");
         }else {
+            if(registerName.length()>=11){
+                return JsonResult.fail().add("errInfo","用户名长度不能超过11位");
+            }
             boolean result=userService.isNameHasRegister(registerName);
             if(!result){
                 return JsonResult.fail().add("errInfo","此用户名已注册");

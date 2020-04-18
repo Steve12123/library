@@ -327,5 +327,13 @@ public class RootDaoImpl implements RootDao{
         return list;
     }
 
+    @Override
+    @Transactional
+    public void deleteUser(Integer userId) {
+        jdbcTemplate.update("delete from userphoto where user_id=?",new Object[]{userId});
+        jdbcTemplate.update("delete from user where user_id=?",new Object[]{userId});
+        jdbcTemplate.update("delete from talking where talking_master_id=?",new Object[]{userId});
+    }
+
 
 }

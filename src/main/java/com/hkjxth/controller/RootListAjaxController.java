@@ -243,13 +243,9 @@ public class RootListAjaxController {
         }
     }
 
-    /*user列表当前页变量*/
-    private static Integer THISPAGENUMTOUSER=1;
-    /*user列表最大页变量*/
-    private static Integer THISLASTPAGENUM;
-
     @RequestMapping("/getAllUser")
     public JsonResult getAllUser(@RequestParam(name = "pageNum", defaultValue = "1")Integer pageNum){
+        /*获取user总数*/
         Integer userCount=rootDao.getAllUsersCount();
         /*设置最大页*/
         Integer lastPageUser;
@@ -264,11 +260,17 @@ public class RootListAjaxController {
         if (pageNum>lastPageUser){
             pageNum=lastPageUser;
         }
-        THISPAGENUMTOUSER=pageNum;
-        THISLASTPAGENUM=lastPageUser;
         /*从第一条开始，每页10条数据*/
         List<User> list=rootDao.getAllUser((pageNum-1)*10);
         return JsonResult.success().add("userList",list).add("lastPage",lastPageUser);
+    }
+
+    @RequestMapping("/deleteUser")
+    public JsonResult deleteUser(@RequestParam("userId")Integer userId){
+        rootDao.deleteUser(userId);
+        String photoName=userDao.getPhoto(userId);
+        UtilClass.deletePhoto(photoName);
+        return JsonResult.success().add("message","success");
     }
 
 }

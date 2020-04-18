@@ -55,4 +55,6 @@ public interface RootDao {
     List<Message> selectMessageWithCondition(String selectTitle, Integer selectId, String selectDate);
 
     List<User> getAllUser(Integer pageNum);
+
+    void deleteUser(Integer userId);
 }

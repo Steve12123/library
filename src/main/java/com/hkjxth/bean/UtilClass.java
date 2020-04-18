@@ -61,7 +61,7 @@ public class UtilClass {
     }
 
     public static final void deletePhoto(String photoName) {
-        if(photoName!=null&&!photoName.equals("")){
+        if(!photoName.equals("empty")){
             File file = new File("D:\\librarySYSPhoto\\bookPhoto\\" + photoName.substring(9));
             file.delete();
         }

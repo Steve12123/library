@@ -66,7 +66,6 @@ public class UserAjaxController {
         if(result){
             Message message=new Message(null,userId,"借书通知",UtilClass.getDateToDatabase(),UtilClass.getDate(),"书籍《"+book.getBookName()+"》借书操作成功，请尽快前往图书馆取书！");
             userService.saveMessage(message);
-            /*未完成 借书成功后向管理员发送通知*/
             return JsonResult.success().add("message","success");
         }else{
             return JsonResult.fail().add("message","fail");

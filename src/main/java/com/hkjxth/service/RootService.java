@@ -42,4 +42,8 @@ public class RootService {
     public Book getBookById(int bookId) {
         return rootDao.getBookById(bookId);
     }
+
+    public Boolean isUserLocked(Integer userId) {
+        return rootDao.isUserLocked(userId);
+    }
 }

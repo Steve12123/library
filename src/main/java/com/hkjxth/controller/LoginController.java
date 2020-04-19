@@ -51,12 +51,18 @@ public class LoginController {
                 model.addAttribute("loginErrInfoToUser",errInfo);
                 return "index";
             }else{
-                //向session域中存入值
-                session.setAttribute("loginUser",user.getUserRealname());
-                session.setAttribute("userId",user.getUserId());
-                USERID=user.getUserId();
-                USERNAME=user.getUserRealname();
-                return "redirect:/mainuser.html";
+                if (rootService.isUserLocked(userId)){
+                    String errInfo="此用户已被管理员冻结,暂时无法登录！";
+                    model.addAttribute("loginErrInfoToUser",errInfo);
+                    return "index";
+                }else{
+                    //向session域中存入值
+                    session.setAttribute("loginUser",user.getUserRealname());
+                    session.setAttribute("userId",user.getUserId());
+                    USERID=user.getUserId();
+                    USERNAME=user.getUserRealname();
+                    return "redirect:/mainuser.html";
+                }
             }
         }else{
             Root root=rootService.rootLogin(userId,password);

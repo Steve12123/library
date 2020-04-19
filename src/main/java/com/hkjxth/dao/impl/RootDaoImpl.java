@@ -335,5 +335,36 @@ public class RootDaoImpl implements RootDao{
         jdbcTemplate.update("delete from talking where talking_master_id=?",new Object[]{userId});
     }
 
+    @Override
+    public Boolean isUserLocked(Integer userId) {
+        try{
+            jdbcTemplate.queryForObject("select * from lockuser where user_id=?",new Object[]{userId},new BeanPropertyRowMapper<>(Lock.class));
+        }catch (EmptyResultDataAccessException e){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void addLockUser(Integer userId,String date) {
+        jdbcTemplate.update("insert into lockuser values(default,?,?)",new Object[]{userId,date});
+    }
+
+    @Override
+    public List<Lock> selectLockUser() {
+        List<Lock> list;
+        try{
+            list=jdbcTemplate.query("select * from lockuser",new BeanPropertyRowMapper<>(Lock.class));
+        }catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return list;
+    }
+
+    @Override
+    public void reLockUser(Integer userId) {
+        jdbcTemplate.update("delete from lockuser where user_id=?",new Object[]{userId});
+    }
+
 
 }

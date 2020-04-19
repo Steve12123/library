@@ -42,6 +42,11 @@
         left: 35%;
     }
 
+    #lock_btn{
+        position: relative;
+        left: 500px;
+    }
+
 
 </style>
 <body>
@@ -53,7 +58,7 @@
 <!--导航栏-->
 <div id="title_list">
     <ul class="nav nav-pills nav-stacked">
-        <li id="page1" role="presentation" class="active"><a href="#information">用户管理</a></li>
+        <li id="page1" role="presentation" class="active"><a href="/useradmin.html">用户管理</a></li>
         <li id="page2" role="presentation"><a href="/userreturnbook.html">书籍归还</a></li>
         <li id="page3" role="presentation"><a href="/userbookrecord.html">消息队列</a></li>
         <li id="page4" role="presentation"><a href="/userleavetime.html">逾期查询</a></li>
@@ -65,10 +70,11 @@
         <div id="select_div">
             <input type="text" name="userId" id="user_id">
             <button onclick="selectUser()">ID查询</button>
+            <button id="lock_btn" onclick="selectLockUser()">冻结用户列表</button>
         </div>
         <div class="col-md-10">
             <table class="table table-hover" border="1" style="text-align: center">
-                <thead>
+                <thead id="table_head">
                     <tr>
                         <td width="80px">用户ID</td>
                         <td width="100px">用户名</td>
@@ -143,8 +149,6 @@
                         alert("未找到符合条件的数据!");
                         return false;
                     }
-
-
                 }
             });
         }
@@ -171,12 +175,51 @@
     }
 
     function lockUser(userId) {
-        var choice=confirm("确定要限制此用户吗？该用户将无法正常与系统交互！");
+        var choice=confirm("确定要限制此用户吗？该用户将无法登录！");
         if (!choice){
             return false;
         } else{
-            /*删除用户 代码*/
+            $.ajax({
+                url:"/rootajaxcontroller/lockUser",
+                data:{"userId":userId},
+                success:function (result) {
+                    if (result.extend.message=="success"){
+                        alert("冻结成功！");
+                    } else {
+                        alert("由于未知的原因，操作失败！");
+                        return false;
+                    }
+                }
+            });
         }
+    }
+
+    function selectLockUser() {
+        $.ajax({
+            url:"/rootajaxcontroller/selectLockUser",
+            success:function (result) {
+                var list=result.extend.list;
+                if (!list) {
+                    alert("暂无被冻结的用户");
+                    return false;
+                }else{
+                    $("#btn").empty();
+                    $("#table_head").empty();
+                    $("#list_body").empty();
+                    var id=$("<td></td>").append("用户ID");
+                    var day=$("<td></td>").append("起始日期");
+                    var make=$("<td></td>").append("操作");
+                    $("<tr></tr>").append(id).append(day).append(make).appendTo("#table_head");
+                    for (i=0;i<list.length;i++){
+                        var userId=$("<td></td>").append(list[i].userId);
+                        var startDay=$("<td></td>").append(list[i].lockTime);
+                        var btn=$("<button></button>").addClass("btn btn-default").attr("onclick","reLockUser("+list[i].userId+")").append("解冻");
+                        var tr_btn=$("<td></td>").append(btn);
+                        $("<tr></tr>").append(userId).append(startDay).append(tr_btn).appendTo("#list_body");
+                    }
+                }
+            }
+        });
     }
 
     /*上一页*/
@@ -235,6 +278,24 @@
                         var btns=$("<td></td>").append(update_btn).append(" ").append(delete_btn).append(" ").append(lock_btn);
                         $("<tr></tr>").append(userId).append(userName).append(userRealname).append(btns)
                             .appendTo("#list_body");
+                    }
+                }
+            });
+        }
+    }
+
+    function reLockUser(userId) {
+        var choice=confirm("确定为ID："+userId+"的用户解冻？");
+        if (!choice){
+            return false;
+        } else{
+            $.ajax({
+                url:"/rootajaxcontroller/reLockUser",
+                data:{"userId":userId},
+                success:function (result) {
+                    if (result.extend.message=="success"){
+                        alert("解冻成功！");
+                        location.reload();
                     }
                 }
             });

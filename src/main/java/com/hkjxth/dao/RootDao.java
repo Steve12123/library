@@ -57,4 +57,12 @@ public interface RootDao {
     List<User> getAllUser(Integer pageNum);
 
     void deleteUser(Integer userId);
+
+    Boolean isUserLocked(Integer userId);
+
+    void addLockUser(Integer userId,String date);
+
+    List<Lock> selectLockUser();
+
+    void reLockUser(Integer userId);
 }

@@ -273,4 +273,26 @@ public class RootListAjaxController {
         return JsonResult.success().add("message","success");
     }
 
+    @RequestMapping("/lockUser")
+    public JsonResult lockUser(@RequestParam("userId")Integer userId){
+        rootDao.addLockUser(userId,UtilClass.getDateToDatabase());
+        return JsonResult.success().add("message","success");
+    }
+
+    @RequestMapping("/selectLockUser")
+    public JsonResult selectLockUser(){
+        List<Lock> list=rootDao.selectLockUser();
+        if (list==null){
+            return JsonResult.success().add("list","empty");
+        }else{
+            return JsonResult.success().add("list",list);
+        }
+    }
+
+    @RequestMapping("/reLockUser")
+    public JsonResult reLockUser(@RequestParam("userId")Integer userId){
+        rootDao.reLockUser(userId);
+        return JsonResult.success().add("message","success");
+    }
+
 }

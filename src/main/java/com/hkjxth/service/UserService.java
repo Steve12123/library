@@ -122,8 +122,8 @@ public class UserService {
         userDao.saveNewTalking(title,userId,userName,textarea,date,subject,fileName);
     }
 
-    public Talking getTalkingById(Integer id) {
-        return userDao.getTalkingById(id);
+    public Talking getTalkingById(Integer talkingId) {
+        return userDao.getTalkingById(talkingId);
     }
 
     public void deleteTalkingById(Integer id) {

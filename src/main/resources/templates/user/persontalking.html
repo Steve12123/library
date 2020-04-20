@@ -117,7 +117,7 @@
     <ul class="nav nav-pills">
         <li id="page1" role="presentation"><a href="/mainuser.html">主页</a></li>
         <li id="page2" role="presentation"><a href="/booklist.html">书库</a></li>
-        <li id="page3" role="presentation" class="active"><a href="#talking">论坛</a></li>
+        <li id="page3" role="presentation" class="active"><a href="/talking.html">论坛</a></li>
     </ul>
 </div>
     <div id="title_list_body" class="tab-content">
@@ -195,7 +195,7 @@
                         }else{
                             talkingPhoto=$("<img src="+list[i].talkingPhoto+">").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
                         }
-                        var talkingTitle=$("<p></p>").css({"font-size":"35px","position":"absolute","left":"200px"}).append("<a href=/userTalking/showTalking{"+list[i].talkingId+"}>"+list[i].talkingTitle+"</a>");
+                        var talkingTitle=$("<p></p>").css({"font-size":"35px","position":"absolute","left":"200px"}).append("<a href=/userTalking/showTalking?talkingId="+list[i].talkingId+">"+list[i].talkingTitle+"</a>");
                         var talkingBodySimple=$("<p></p>").css({"font-size":"20px","position":"absolute","left":"200px","top":"50px"}).append(list[i].talkingBookBody);
                         var userAndTime=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"200px","top":"80px"}).append("<a href=/userTalking/showUser?userId="+list[i].talkingMasterId+">"+list[i].talkingMasterName+"</a>"+"/"+list[i].talkingCreateDate);
                         var userSubject=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"1000px","top":"105px"}).append(list[i].talkingSubject);
@@ -230,7 +230,7 @@
                         }else{
                             talkingPhoto=$("<img src="+list[i].talkingPhoto+">").attr("height","145px").attr("width","200px").css({"position":"absolute","left":"-2px","top":"-1px"});
                         }
-                        var talkingTitle=$("<p></p>").css({"font-size":"35px","position":"absolute","left":"200px"}).append("<a href=/ajaxcontroller/showTalking"+list[i].talkingId+">"+list[i].talkingTitle+"</a>");
+                        var talkingTitle=$("<p></p>").css({"font-size":"35px","position":"absolute","left":"200px"}).append("<a href=/userTalking/showTalking?talkingId="+list[i].talkingId+">"+list[i].talkingTitle+"</a>");
                         var talkingBodySimple=$("<p></p>").css({"font-size":"20px","position":"absolute","left":"200px","top":"50px"}).append(list[i].talkingBookBody);
                         var userAndTime=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"200px","top":"80px"}).append("<a href=/userTalking/showUser?userId="+list[i].talkingMasterId+">"+list[i].talkingMasterName+"</a>"+"/"+list[i].talkingCreateDate);
                         var userSubject=$("<p></p>").addClass("help-block").css({"font-size":"20px","position":"absolute","left":"1000px","top":"105px"}).append(list[i].talkingSubject);

@@ -25,6 +25,13 @@ public class UtilClass {
         return time;
     }
 
+    public static final String getDateToLocal(){
+        Date date=new Date();
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMddHHmmss");
+        String time=simpleDateFormat.format(date);
+        return time;
+    }
+
 
     public static final String getDate(){
         Date date=new Date();
@@ -41,7 +48,7 @@ public class UtilClass {
             String fileName=file.getOriginalFilename();
             String suffix=fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
             if(divFileName==null||divFileName==""){
-                fileName= "lib"+getDate()+suffix;
+                fileName= "lib"+getDateToLocal()+suffix;
             }else{
                 fileName=divFileName+suffix;
             }

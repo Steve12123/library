@@ -260,8 +260,8 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Talking getTalkingById(Integer id) {
-        return jdbcTemplate.queryForObject("select * from talking where talking_id=?",new Object[]{id},new BeanPropertyRowMapper<>(Talking.class));
+    public Talking getTalkingById(Integer talkingId) {
+        return jdbcTemplate.queryForObject("select * from talking where talking_id=?",new Object[]{talkingId},new BeanPropertyRowMapper<>(Talking.class));
     }
 
     @Override

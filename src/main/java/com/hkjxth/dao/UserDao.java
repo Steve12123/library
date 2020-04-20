@@ -61,7 +61,7 @@ public interface UserDao {
 
     void saveNewTalking(String title, Integer userId, String userName, String textarea, String date, String subject, String fileName);
 
-    Talking getTalkingById(Integer id);
+    Talking getTalkingById(Integer talkingId);
 
     void deleteTalkingById(Integer id);
 

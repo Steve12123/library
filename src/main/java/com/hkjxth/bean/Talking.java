@@ -12,7 +12,7 @@ public class Talking {
     private String talkingTitle;
     private Integer talkingMasterId;
     private String talkingMasterName;
-    private String talkingBookBody;
+    private String talkingBody;
     private String talkingCreateDate;
     private String talkingSubject;
     private String talkingPhoto;

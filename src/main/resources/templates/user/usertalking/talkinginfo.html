@@ -18,6 +18,71 @@
         color: #ffffff;
     }
 
+    /*顶部 个人中心*/
+    #dropdown_list {
+        position: absolute;
+        top: 130px;
+        left: 70%;
+    }
+
+    #talking_title{
+        position: absolute;
+        left: 37%;
+        top: 180px;
+        width: 600px;
+    }
+
+    #title{
+        text-align: center;
+    }
+
+    #date{
+        text-align: right;
+    }
+
+    #talking_body{
+        position: absolute;
+        border-style: solid;
+        width: 800px;
+        left: 32%;
+        top: 275px;
+    }
+
+    /*个人信息栏*/
+    #user_info{
+        position: absolute;
+        left: 350px;
+        width: 300px;
+        top: 180px;
+    }
+
+    #user_name{
+        position: absolute;
+        font-size: 25px;
+    }
+
+    #user_scan{
+        position: absolute;
+        font-size: 16px;
+        top: 40px;
+    }
+
+    #user_talking_title{
+        position: absolute;
+        font-size: 30px;
+        left: 350px;
+        top: 130px;
+        top: 300px;
+    }
+
+    #user_talkings{
+        position: absolute;
+        font-size: 20px;
+        left: 275px;
+        top: 350px;
+        text-align: center;
+    }
+
 </style>
 
 
@@ -28,6 +93,79 @@
 <div>
     <h1 class="text-center" id="book_title"><a href="/mainuser.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
 </div>
+<!-- 个人中心 -->
+<div id="dropdown_list">
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            欢迎：[[${session.loginUser}]]
+            <span class="glyphicon glyphicon-menu-down"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <!--thymeleaf的条件下动态获取session中的值并以rest风格传递给后端-->
+            <li><a th:href="@{/userinfocontroller/userinfo{id}(id=${session.userId})}"><span class="glyphicon glyphicon-home"></span>个人信息</a></li>
+            <li><a th:href="@{/userinfocontroller/mywaiting{id}(id=${session.userId})}"><span class="glyphicon glyphicon-list"></span>我的书籍</a></li>
+            <li><a th:href="@{/userinfocontroller/myinformation{id}(id=${session.userId})}"><span class="glyphicon glyphicon-bullhorn"></span>消息通知</a></li>
+            <li><a href="/logout"><span class="glyphicon glyphicon-remove"></span>登出</a></li>
+        </ul>
+    </div>
+</div>
+<div id="user_info">
+    <img src="/static/images/StaticPicture.PNG" id="user_img" width="100px" height="100px">
+    <span id="user_name"></span>
+    <span id="user_scan">个人签名</span>
+</div>
+<div id="user_other">
+    <span id="user_talking_title">TA的话题</span>
+    <ul id="user_talkings" style="list-style: none;">
+        <!--最多10条-->
+    </ul>
+</div>
+<div id="talking_title">
+    <h1 id="title"></h1>
+    <h4 id="date"></h4>
+</div>
+<div id="talking_body">
 
+</div>
+
+<script type="application/javascript">
+    var talking=location.search;
+    talking.substring(1,talking.length);
+    var talkingId=talking.split("=")[1];
+    var userId=0;
+    $.ajax({
+        url:"/userTalking/getTalkingById",
+        data:{"talkingId":talkingId},
+        success:function (result) {
+            var talkingInfo=result.extend.talking;
+            userId=talkingInfo.talkingMasterId;
+            $("#title").append(talkingInfo.talkingTitle);
+            $("#talking_body").css("font-size","20px").append(talkingInfo.talkingBody);
+            $("#date").append("发布于"+talkingInfo.talkingCreateDate);
+            $("#user_name").append(talkingInfo.talkingMasterName);
+            getUserTalking();
+        }
+    });
+
+    function getUserTalking(){
+        $.ajax({
+            url:"/userTalking/getTalkingByUserId",
+            data:{"userId":userId},
+            success:function (result) {
+                var userTalkingList=result.extend.talkingList;
+                console.log(userTalkingList);
+                if (userTalkingList.length==0) {
+                    return false;
+                }else{
+                    for (i=0;i<userTalkingList.length;i++){
+                        var talkingTitle=userTalkingList[i].talkingTitle;
+                        $("<li></li>").css({"margin-bottom":"10px"}).append(talkingTitle).appendTo("#user_talkings");
+                    }
+                }
+            }
+        });
+    }
+
+</script>
 </body>
 </html>

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -39,17 +38,29 @@ public class UserTalkingController {
         return JsonResult.success().add("list",list);
     }
 
+    @RequestMapping("/getTalkingById")
+    @ResponseBody
+    public JsonResult getTalkingById(@RequestParam("talkingId")Integer talkingId){
+        Talking talking=userService.getTalkingById(talkingId);
+        return JsonResult.success().add("talking",talking);
+    }
+
     @RequestMapping("/showTalking")
-    public String toTalkingId(@RequestParam("talkingId")Integer id,
-                              RedirectAttributes attributes){
-        attributes.addFlashAttribute("talkingId",id);
-        return "redirect:/talkingInfo.html";
+    public String toTalkingId(@RequestParam("talkingId")Integer talkingId){
+        return "redirect:/talkingInfo.html?talkingId="+talkingId;
     }
 
     @RequestMapping("/getUserTalking")
     @ResponseBody
     public JsonResult getUserInfo(){
         List<Talking> talkingList=userService.selectTalkingByUserId(USERID);
+        return JsonResult.success().add("talkingList",talkingList);
+    }
+
+    @RequestMapping("/getTalkingByUserId")
+    @ResponseBody
+    public JsonResult getUserTalking(@RequestParam("userId")Integer userId){
+        List<Talking> talkingList=userService.selectTalkingByUserId(userId);
         return JsonResult.success().add("talkingList",talkingList);
     }
 

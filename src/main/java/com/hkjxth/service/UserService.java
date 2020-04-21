@@ -118,8 +118,8 @@ public class UserService {
         return userDao.getTalkingSubject();
     }
 
-    public void saveNewTalking(String title, Integer userId, String userName, String textarea, String date, String subject, String fileName) {
-        userDao.saveNewTalking(title,userId,userName,textarea,date,subject,fileName);
+    public Integer saveNewTalking(String title, Integer userId, String userName, String textarea, String date, String subject, String fileName,String dateToLocal) {
+        return userDao.saveNewTalking(title,userId,userName,textarea,date,subject,fileName,dateToLocal);
     }
 
     public Talking getTalkingById(Integer talkingId) {
@@ -136,5 +136,17 @@ public class UserService {
 
     public void saveMessage(Message message) {
         userDao.saveMessage(message);
+    }
+
+    public void createTalkingReplyByTalkingId(Integer talkingId) {
+        userDao.createTalkingReplyTableByTalkingId(talkingId);
+    }
+
+    public List<Reply> getTalkingReply(Integer talkingId) {
+        return userDao.getTalkingReply(talkingId);
+    }
+
+    public void addReply(Integer talkingId, Integer userId, String replyUserName, String reportArea, String date) {
+        userDao.addReply(talkingId,userId,replyUserName,reportArea,date);
     }
 }

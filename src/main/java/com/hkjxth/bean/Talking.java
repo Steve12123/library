@@ -16,4 +16,5 @@ public class Talking {
     private String talkingCreateDate;
     private String talkingSubject;
     private String talkingPhoto;
+    private String talkingDate;
 }

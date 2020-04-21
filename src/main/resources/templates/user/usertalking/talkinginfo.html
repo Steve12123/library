@@ -42,10 +42,14 @@
 
     #talking_body{
         position: absolute;
-        border-style: solid;
         width: 800px;
         left: 32%;
         top: 275px;
+    }
+
+    #t_report{
+        position: relative;
+        top: -10px;
     }
 
     /*个人信息栏*/
@@ -82,6 +86,28 @@
         top: 350px;
         text-align: center;
     }
+
+    #report_title{
+        position: relative;
+        font-size: 20px;
+    }
+
+    #report_textarea{
+        width: 650px;
+        height: 80px;
+        font-size: 15px;
+    }
+
+    #submit_btn{
+        position: relative;
+    }
+
+    #report_list{
+        position: relative;
+        top: -30px;
+    }
+
+
 
 </style>
 
@@ -125,42 +151,116 @@
     <h4 id="date"></h4>
 </div>
 <div id="talking_body">
+    <div id="t_body">
 
+    </div>
+    <div id="t_report">
+        <hr>
+        <span class="help-block" id="report_title">发表评论</span>
+        <form action="##" method="post" onsubmit="return false" id="reply_form">
+            <input id="talking_id" type="hidden" name="talkingId">
+            <textarea id="report_textarea" name="reportArea"></textarea>
+            <br>
+            <button id="submit_btn" type="submit" onclick="save_reply()" class="btn btn-default">发表</button>
+        </form>
+        <hr>
+    </div>
+    <div id="report_list">
+        <!--<div style="font-size: 20px;">
+            <span>1楼 </span><a href="#space">用户名称</a><span style="position: relative; left: 400px;">回复时间</span>
+            <p>回复内容回复内容</p>
+            <hr>
+        </div>-->
+    </div>
 </div>
 
 <script type="application/javascript">
-    var talking=location.search;
-    talking.substring(1,talking.length);
-    var talkingId=talking.split("=")[1];
+    var talking1=location.search;
+    talking1.substring(1,talking1.length);
+    var thisTalking=talking1.split("=")[1];
     var userId=0;
     $.ajax({
         url:"/userTalking/getTalkingById",
-        data:{"talkingId":talkingId},
+        data:{"talkingId":thisTalking},
         success:function (result) {
             var talkingInfo=result.extend.talking;
             userId=talkingInfo.talkingMasterId;
+            $("#talking_id").attr("value",talkingInfo.talkingId);
             $("#title").append(talkingInfo.talkingTitle);
-            $("#talking_body").css("font-size","20px").append(talkingInfo.talkingBody);
+            $("#t_body").css("font-size","20px").append(talkingInfo.talkingBody);
             $("#date").append("发布于"+talkingInfo.talkingCreateDate);
-            $("#user_name").append(talkingInfo.talkingMasterName);
-            getUserTalking();
+            var userName=$("<a></a>").attr("href","/showUser.html?userId="+talkingInfo.talkingMasterId).append(talkingInfo.talkingMasterName);
+            $("#user_name").append(userName);
+            getUserTalking(userId);
+            getUserPhoto(userId);
+            getTalkingReply(talkingInfo.talkingId);
         }
     });
 
-    function getUserTalking(){
+    function getUserTalking(userId){
         $.ajax({
             url:"/userTalking/getTalkingByUserId",
             data:{"userId":userId},
             success:function (result) {
                 var userTalkingList=result.extend.talkingList;
-                console.log(userTalkingList);
                 if (userTalkingList.length==0) {
                     return false;
                 }else{
                     for (i=0;i<userTalkingList.length;i++){
-                        var talkingTitle=userTalkingList[i].talkingTitle;
+                        var talkingTitle=$("<a></a>").attr("href","/showUser.html?userId="+userTalkingList[i].talkingId).append(userTalkingList[i].talkingTitle);
                         $("<li></li>").css({"margin-bottom":"10px"}).append(talkingTitle).appendTo("#user_talkings");
                     }
+                }
+            }
+        });
+    }
+
+    function getUserPhoto(userId) {
+        $.ajax({
+            url:"/ajaxcontroller/getUserPhoto",
+            data:{"userId":userId},
+            success:function (result) {
+                var photo=result.extend.photo;
+                if (!photo||photo=="empty"){
+                    return false;
+                } else{
+                    $("#user_img").attr("src",photo);
+                }
+            }
+        });
+    }
+
+    function getTalkingReply(talkingId) {
+        $.ajax({
+            url:"/userTalking/getTalkingReply",
+            data:{"talkingId":talkingId},
+            success:function (result) {
+                if (result.extend.mssage=="empty"){
+                    console.log("无回复");
+                    $("<p></p>").addClass("help-block").append("暂无回复，快来抢占沙发吧！").appendTo("#report_list");
+                } else{
+                    console.log("有回复");
+                    var replyList=result.extend.replyList;
+                    for (i=0;i<replyList.length;i++){
+                        var replyHouse=$("<span></span>").append(replyList[i].replyId+"楼 ");
+                        var replyUserName=$("<a></a>").attr("href","/userTalking/showTalking?talkingId="+replyList[i].replyUserId).append(replyList[i].replyUserName);
+                        var replyBody=$("<p></p>").append(replyList[i].replyBody);
+                        var replyDate=$("<span></span>").addClass("help-block").css({"position":"relative","left":"400px","top":"-30px"}).append(replyList[i].replyDate);
+                        $("<div></div>").css({"font-size":"20px"}).append(replyHouse).append(replyUserName).append(replyDate).append(replyBody).append("<hr>").appendTo("#report_list");
+                    }
+                }
+            }
+        });
+    }
+    
+    function save_reply() {
+        $.ajax({
+            url:"/userTalking/replyTalking",
+            data:$("#reply_form").serialize(),
+            success:function (result) {
+                if (result.extend.message=="success"){
+                    alert("回复成功!");
+                    location.reload();
                 }
             }
         });

@@ -4,6 +4,7 @@ import com.hkjxth.bean.*;
 import com.hkjxth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +30,18 @@ public class UserTalkingController {
     public String myTalking(HttpSession session){
         USERID= (Integer) session.getAttribute("userId");
         return "redirect:/mineTalking.html";
+    }
+
+    @RequestMapping("/replyTalking")
+    @ResponseBody
+    public JsonResult replyTalking(HttpSession session,
+                               @RequestParam("talkingId")Integer talkingId,
+                               @RequestParam("reportArea")String reportArea){
+        USERID= (Integer) session.getAttribute("userId");
+        String date=UtilClass.getDateToDatabase();
+        String replyUserName=userService.getUserById(USERID).getUserName();
+        userService.addReply(talkingId,USERID,replyUserName,reportArea,date);
+        return JsonResult.success().add("message","success");
     }
 
     @RequestMapping("/selectTalking")
@@ -73,6 +86,7 @@ public class UserTalkingController {
 
     @RequestMapping("/saveTalking")
     @ResponseBody
+    @Transactional
     public JsonResult saveTalking(@RequestParam("title")String title,
                                   @RequestParam("photo")MultipartFile file,
                                   @RequestParam("subject")String subject,
@@ -80,7 +94,8 @@ public class UserTalkingController {
         String date=UtilClass.getDate();
         String fileName=UtilClass.savePhoto(file,null);
         User user=userService.getUserById(USERID);
-        userService.saveNewTalking(title,user.getUserId(),user.getUserName(),textarea,date,subject,fileName);
+        Integer talkingId=userService.saveNewTalking(title,user.getUserId(),user.getUserName(),textarea,date,subject,fileName,UtilClass.getDateToLocal());
+        userService.createTalkingReplyByTalkingId(talkingId);
         return JsonResult.success().add("message","success");
     }
 
@@ -111,5 +126,16 @@ public class UserTalkingController {
         String userPhoto=userService.getUserPhoto(thisUser.getUserId());
         thisUser.setUserPassword(userPhoto);
         return JsonResult.success().add("userInfo",thisUser);
+    }
+
+    @RequestMapping("/getTalkingReply")
+    @ResponseBody
+    public JsonResult getTalkingReply(@RequestParam("talkingId")Integer talkingId){
+        List<Reply> list=userService.getTalkingReply(talkingId);
+        if (list==null){
+            return JsonResult.success().add("message","empty");
+        }else{
+            return JsonResult.success().add("replyList",list);
+        }
     }
 }

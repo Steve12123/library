@@ -255,8 +255,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void saveNewTalking(String title, Integer userId, String userName, String textarea, String date, String subject, String fileName) {
-        jdbcTemplate.update("insert into talking values(default,?,?,?,?,?,?,?)",new Object[]{title,userId,userName,textarea,date,subject,fileName});
+    @Transactional
+    public Integer saveNewTalking(String title, Integer userId, String userName, String textarea, String date, String subject, String fileName, String dateToLocal) {
+        jdbcTemplate.update("insert into talking values(default,?,?,?,?,?,?,?,?)",new Object[]{title,userId,userName,textarea,date,subject,fileName,dateToLocal});
+        Integer talkingId=jdbcTemplate.queryForObject("select talking_id from talking where talking_master_id=? and talking_date=?",new Object[]{userId,dateToLocal},Integer.class);
+        return talkingId;
     }
 
     @Override
@@ -283,6 +286,36 @@ public class UserDaoImpl implements UserDao {
     @Override
     public void saveMessage(Message message) {
         jdbcTemplate.update("insert into message values(default,?,?,?,?,?)",new Object[]{message.getUserId(),message.getMessageTitle(),message.getMessageDate(),message.getMessageDatabase(),message.getMessageBody()});
+    }
+
+    @Override
+    public void createTalkingReplyTableByTalkingId(Integer talkingId) {
+        String tableName="talking_"+talkingId+"_reply";
+        jdbcTemplate.execute("CREATE TABLE `"+tableName+"` (\n" +
+                "`reply_id`  int NOT NULL AUTO_INCREMENT ,\n" +
+                "`reply_user_id`  int(11) NULL ,\n" +
+                "`reply_user_name`  varchar(20) NULL ,\n" +
+                "`reply_body`  longtext NULL ,\n" +
+                "`reply_date`  varchar(20) NULL ,\n" +
+                "PRIMARY KEY (`reply_id`));");
+    }
+
+    @Override
+    public List<Reply> getTalkingReply(Integer talkingId) {
+        List<Reply> list;
+        String tableName="talking_"+talkingId+"_reply";
+        try{
+            list=jdbcTemplate.query("select * from "+tableName,new BeanPropertyRowMapper<>(Reply.class));
+        }catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return list;
+    }
+
+    @Override
+    public void addReply(Integer talkingId, Integer userId, String replyUserName, String reportArea, String date) {
+        String tableName="talking_"+talkingId+"_reply";
+        jdbcTemplate.update("insert into "+tableName+" values(default,?,?,?,?)",new Object[]{userId,replyUserName,reportArea,date});
     }
 
 }

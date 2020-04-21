@@ -84,4 +84,10 @@ public class UserAjaxController {
         List<Talking> talkingList=userService.getTalkingList((pageNum-1)*5);
         return JsonResult.success().add("talkingList",talkingList);
     }
+
+    @RequestMapping("/getUserPhoto")
+    public JsonResult getUserPhoto(@RequestParam("userId")Integer userId){
+        String photo=userService.getUserPhoto(userId);
+        return JsonResult.success().add("photo",photo);
+    }
 }

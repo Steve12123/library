@@ -59,7 +59,7 @@ public interface UserDao {
 
     List<TalkingSubject> getTalkingSubject();
 
-    void saveNewTalking(String title, Integer userId, String userName, String textarea, String date, String subject, String fileName);
+    Integer saveNewTalking(String title, Integer userId, String userName, String textarea, String date, String subject, String fileName, String dateToLocal);
 
     Talking getTalkingById(Integer talkingId);
 
@@ -68,4 +68,10 @@ public interface UserDao {
     List<Message> getUserMessage(Integer userId);
 
     void saveMessage(Message message);
+
+    void createTalkingReplyTableByTalkingId(Integer talkingId);
+
+    List<Reply> getTalkingReply(Integer talkingId);
+
+    void addReply(Integer talkingId, Integer userId, String replyUserName, String reportArea, String date);
 }

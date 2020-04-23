@@ -280,7 +280,7 @@ public class UserDaoImpl implements UserDao {
     public List<Message> getUserMessage(Integer userId) {
         List<Message> list=new ArrayList<>();
         try{
-            list=jdbcTemplate.query("select * from message where user_id=? order by message_id desc",new Object[]{userId},new BeanPropertyRowMapper<>(Message.class));
+            list=jdbcTemplate.query("select * from message where user_id=? order by message_id desc limit 10",new Object[]{userId},new BeanPropertyRowMapper<>(Message.class));
         }catch (EmptyResultDataAccessException e){
             return list;
         }

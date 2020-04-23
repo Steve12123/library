@@ -63,6 +63,9 @@
 <div id="title_list_body" class="tab-content">
     <div class="tab-pane fade in active" id="waiting">
         <div>
+            <span class="help-block">
+                我的在借书目名单
+            </span>
             <table class="table table-bordered" id="user_book_table">
                 <thead align="center">
                     <tr>
@@ -131,6 +134,7 @@
                 return false;
             } else{
                 $("#mark_message").empty();
+                $("#mark_message").append("我的关注列表");
                 var tName=$("<td></td>").append("书籍名称");
                 var tDate=$("<td></td>").append("预约时间");
                 var tBtn=$("<td></td>").append("操作");

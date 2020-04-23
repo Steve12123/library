@@ -37,6 +37,12 @@
         width: 900px;
     }
 
+    #mark_list{
+        position: relative;
+        width: 900px;
+        top: 250px;
+    }
+
 
 </style>
 <body>
@@ -74,6 +80,17 @@
                 </tbody>
             </table>
         </div>
+        <div id="mark_list">
+            <p class="help-block" id="mark_message">暂无预约书籍</p>
+            <table class="table table-bordered">
+                <thead align="center" id="mark_list_head">
+
+                </thead>
+                <tbody align="center" id="mark_list_body">
+
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <script type="application/javascript">
@@ -107,6 +124,30 @@
         }
     });
 
+    $.ajax({
+        url:"/userinfocontroller/getUserMarkList",
+        success:function (result) {
+            if (result.extend.message=="empty"){
+                return false;
+            } else{
+                $("#mark_message").empty();
+                var tName=$("<td></td>").append("书籍名称");
+                var tDate=$("<td></td>").append("预约时间");
+                var tBtn=$("<td></td>").append("操作");
+                $("<tr></tr>").append(tName).append(tDate).append(tBtn).appendTo("#mark_list_head");
+                var markList=result.extend.markList;
+                for (i=0;i<markList.length;i++){
+                    var bookName=$("<td></td>").append(markList[i].bookName);
+                    var startDate=$("<td></td>").append(markList[i].startDate);
+                    var select_btn=$("<button></button>").addClass("btn btn-default").attr("onclick","checkCount("+markList[i].bookId+","+markList[i].userId+","+markList[i].markId+")").append("刷新");
+                    var remove_btn=$("<button></button>").addClass("btn btn-warning").attr("onclick","removeMark("+markList[i].markId+")").append("取消关注");
+                    var btns=$("<td></td>").append(select_btn).append(" ").append(remove_btn);
+                    $("<tr></tr>").append(bookName).append(startDate).append(btns).appendTo("#mark_list_body");
+                }
+            }
+        }
+    });
+
     function addTime(bookId) {
         var choice=confirm("确定要续借编号为"+bookId+"的书籍吗？");
         if(!choice){
@@ -136,6 +177,60 @@
                }
             });
         }
+    }
+
+    function removeMark(markId) {
+        var choice=confirm("确定要移除这条关注吗？");
+        if (!choice) {
+            return false;
+        }else{
+            $.ajax({
+                url:"/userinfocontroller/removeMark",
+                data:{"markId":markId},
+                success:function (result) {
+                    if (result.extend.message=="success"){
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+
+    function checkCount(bookId,userId,markId) {
+        $.ajax({
+            url:"/ajaxcontroller/getNowBookCount",
+            data:{"bookId":bookId},
+            success:function (result) {
+                if (result.extend.message=="y"){
+                    var choice=confirm("当前书籍库存有剩余，是否立即借书？");
+                    if (!choice) {
+                        return false;
+                    }else{
+                        bringbook(userId,bookId,markId);
+                    }
+                }else{
+                    alert("当前暂无库存,请耐心等待。");
+                    return false;
+                }
+            }
+        });
+    }
+
+    function bringbook(userId,bookId,markId) {
+        $.ajax({
+            url:"/ajaxcontroller/bringbook",
+            data:{"userId":userId,"bookId":bookId},
+            success:function (result) {
+                console.log(result.extend.message);
+                if (result.extend.message=="success"){
+                    alert("借书成功！请尽快前往图书馆取书。");
+                    removeMark(markId);
+                }else{
+                    alert("借书失败!可能的原因：1.用户当前借阅的书籍不能超过三本。2.未能及时确认借书，书籍已被借走。");
+                    return false;
+                }
+            }
+        });
     }
 </script>
 </body>

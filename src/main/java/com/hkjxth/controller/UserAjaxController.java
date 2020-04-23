@@ -3,6 +3,7 @@ package com.hkjxth.controller;
 import com.hkjxth.bean.*;
 import com.hkjxth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,6 +59,7 @@ public class UserAjaxController {
     }
 
     @RequestMapping("/bringbook")
+    @Transactional
     public JsonResult bringBook(@RequestParam("userId")Integer userId,
                                 @RequestParam("bookId")Integer bookId){
         String date=UtilClass.getDate();
@@ -89,5 +91,18 @@ public class UserAjaxController {
     public JsonResult getUserPhoto(@RequestParam("userId")Integer userId){
         String photo=userService.getUserPhoto(userId);
         return JsonResult.success().add("photo",photo);
+    }
+
+    @RequestMapping("/markBook")
+    public JsonResult markBook(@RequestParam("userId")Integer userId,
+                               @RequestParam("bookId")Integer bookId){
+        String result=userService.isUserMarkThisBook(userId,bookId);
+        if (result.equals("no")){
+            Book book=userService.getBookInfoById(bookId);
+            userService.saveMarkInfo(userId,bookId,book.getBookName(),UtilClass.getDateToDatabase());
+            return JsonResult.success().add("message","success");
+        }else{
+            return JsonResult.fail().add("message","fail");
+        }
     }
 }

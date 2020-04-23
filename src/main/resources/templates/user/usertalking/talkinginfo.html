@@ -104,11 +104,21 @@
 
     #report_list{
         position: relative;
-        top: -30px;
+        top: -100px;
     }
 
+    #submit_btn{
+        position: relative;
+        left: 670px;
+        top: -85px;
+        width: 80px;
+        height: 80px;
+    }
 
-
+    #cut_line{
+        position: relative;
+        top: -90px;
+    }
 </style>
 
 
@@ -163,7 +173,7 @@
             <br>
             <button id="submit_btn" type="submit" onclick="save_reply()" class="btn btn-default">发表</button>
         </form>
-        <hr>
+        <hr id="cut_line">
     </div>
     <div id="report_list">
         <!--<div style="font-size: 20px;">
@@ -207,7 +217,7 @@
                     return false;
                 }else{
                     for (i=0;i<userTalkingList.length;i++){
-                        var talkingTitle=$("<a></a>").attr("href","/showUser.html?userId="+userTalkingList[i].talkingId).append(userTalkingList[i].talkingTitle);
+                        var talkingTitle=$("<a></a>").attr("href","/userTalking/showTalking?talkingId="+userTalkingList[i].talkingId).append(userTalkingList[i].talkingTitle);
                         $("<li></li>").css({"margin-bottom":"10px"}).append(talkingTitle).appendTo("#user_talkings");
                     }
                 }
@@ -235,16 +245,16 @@
             url:"/userTalking/getTalkingReply",
             data:{"talkingId":talkingId},
             success:function (result) {
-                if (result.extend.mssage=="empty"){
+                if (result.extend.mssage=="empty"||result.extend.replyList.length==0){
                     console.log("无回复");
-                    $("<p></p>").addClass("help-block").append("暂无回复，快来抢占沙发吧！").appendTo("#report_list");
+                    $("<p></p>").addClass("help-block").append("暂无评论，快来抢占沙发吧！").appendTo("#report_list");
                 } else{
                     console.log("有回复");
                     var replyList=result.extend.replyList;
                     for (i=0;i<replyList.length;i++){
                         var replyHouse=$("<span></span>").append(replyList[i].replyId+"楼 ");
-                        var replyUserName=$("<a></a>").attr("href","/userTalking/showTalking?talkingId="+replyList[i].replyUserId).append(replyList[i].replyUserName);
-                        var replyBody=$("<p></p>").append(replyList[i].replyBody);
+                        var replyUserName=$("<a></a>").attr("href","/showUser.html?userId="+replyList[i].replyUserId).append(replyList[i].replyUserName);
+                        var replyBody=$("<p></p>").css({"position":"relative","top":"-30px"}).append(replyList[i].replyBody);
                         var replyDate=$("<span></span>").addClass("help-block").css({"position":"relative","left":"400px","top":"-30px"}).append(replyList[i].replyDate);
                         $("<div></div>").css({"font-size":"20px"}).append(replyHouse).append(replyUserName).append(replyDate).append(replyBody).append("<hr>").appendTo("#report_list");
                     }

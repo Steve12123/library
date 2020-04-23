@@ -87,6 +87,8 @@ public class UserInfoController {
             }
         }
         userService.updateUserInfo(userId,changeName,sex,subject);
+        Message message=new Message(null,userId,"操作确认",UtilClass.getDateToDatabase(),UtilClass.getDate(),"个人信息修改成功。");
+        userService.saveMessage(message);
         return JsonResult.success().add("message","success");
     }
 
@@ -105,6 +107,8 @@ public class UserInfoController {
     @ResponseBody
     public JsonResult changeUserPassword(@RequestParam("newPassword")String newPassword){
         userService.changeUserPassword(userId,newPassword);
+        Message message=new Message(null,userId,"操作确认",UtilClass.getDateToDatabase(),UtilClass.getDate(),"登录密码已修改。");
+        userService.saveMessage(message);
         return JsonResult.success().add("message","密码修改成功！");
     }
 
@@ -119,7 +123,7 @@ public class UserInfoController {
     @ResponseBody
     public JsonResult addBookTime(@RequestParam("bookId")Integer bookId){
         userService.addBookTime(userId,bookId);
-        Message message=new Message(null,userId,"书籍延期成功",UtilClass.getDateToDatabase(),UtilClass.getDate(),"编号为"+bookId+"的书籍延期操作。");
+        Message message=new Message(null,userId,"延期操作",UtilClass.getDateToDatabase(),UtilClass.getDate(),"编号为"+bookId+"的书籍延期操作成功。");
         userService.saveMessage(message);
         return JsonResult.success().add("message","success");
     }
@@ -143,5 +147,23 @@ public class UserInfoController {
         List<Message> list=new ArrayList<>();
         list=userService.getUserMessage(userId);
         return JsonResult.success().add("list",list);
+    }
+
+    @RequestMapping("/getUserMarkList")
+    @ResponseBody
+    public JsonResult getUserMarkList(){
+        List<MarkList> markList=userService.getUserMarkList(userId);
+        if (markList==null||markList.size()==0){
+            return JsonResult.success().add("message","empty");
+        }else{
+            return JsonResult.success().add("markList",markList);
+        }
+    }
+
+    @RequestMapping("/removeMark")
+    @ResponseBody
+    public JsonResult removeMark(@RequestParam("markId")Integer markId){
+        userService.removeMarkByMarkId(markId);
+        return JsonResult.success().add("message","success");
     }
 }

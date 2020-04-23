@@ -74,4 +74,12 @@ public interface UserDao {
     List<Reply> getTalkingReply(Integer talkingId);
 
     void addReply(Integer talkingId, Integer userId, String replyUserName, String reportArea, String date);
+
+    String isUserMarkThisBook(Integer userId, Integer bookId);
+
+    List<MarkList> getUserMarkList(Integer userId);
+
+    void saveMarkInfo(Integer userId, Integer bookId, String bookName, String date);
+
+    void removeMark(Integer markId);
 }

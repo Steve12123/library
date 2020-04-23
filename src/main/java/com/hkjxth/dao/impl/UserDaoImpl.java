@@ -115,6 +115,10 @@ public class UserDaoImpl implements UserDao {
     @Override
     @Transactional
     public Boolean bringBook(Integer userId, String bookName, Integer bookId, String date) {
+        Integer count=jdbcTemplate.queryForObject("select count(*) from user_book_list_record where user_id=?",new Object[]{userId},Integer.class);
+        if (count>=3) {
+            return false;
+        }
         try{
             jdbcTemplate.queryForObject("select * from user_book_list_record where user_id=? and book_id=?",new Object[]{userId,bookId},new BeanPropertyRowMapper<>(UserBookList.class));
         }catch (EmptyResultDataAccessException e){
@@ -316,6 +320,37 @@ public class UserDaoImpl implements UserDao {
     public void addReply(Integer talkingId, Integer userId, String replyUserName, String reportArea, String date) {
         String tableName="talking_"+talkingId+"_reply";
         jdbcTemplate.update("insert into "+tableName+" values(default,?,?,?,?)",new Object[]{userId,replyUserName,reportArea,date});
+    }
+
+    @Override
+    public String isUserMarkThisBook(Integer userId, Integer bookId) {
+        try{
+            jdbcTemplate.queryForObject("select * from mark_book_list where user_id=? and book_id=?", new Object[]{userId,bookId}, new BeanPropertyRowMapper<>(MarkList.class));
+        }catch (EmptyResultDataAccessException e){
+            return "no";
+        }
+        return "yes";
+    }
+
+    @Override
+    public List<MarkList> getUserMarkList(Integer userId) {
+        List<MarkList> markList;
+        try{
+            markList=jdbcTemplate.query("select * from mark_book_list where user_id=?",new Object[]{userId},new BeanPropertyRowMapper<>(MarkList.class));
+        }catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return markList;
+    }
+
+    @Override
+    public void saveMarkInfo(Integer userId, Integer bookId, String bookName, String date) {
+        jdbcTemplate.update("insert into mark_book_list values(default,?,?,?,?)",new Object[]{userId,bookId,bookName,date});
+    }
+
+    @Override
+    public void removeMark(Integer markId) {
+        jdbcTemplate.update("delete from mark_book_list where mark_id=?",new Object[]{markId});
     }
 
 }

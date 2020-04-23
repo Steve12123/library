@@ -493,7 +493,8 @@
                                     alert("借书成功！请及时前往图书馆取书。");
                                     location.reload();
                                 }else{
-                                    alert("借书失败！无法重复预订同一本书！");
+                                    alert("借书失败！可能原因1：无法重复预订同一本书。2：用户借书上限为三本。");
+                                    return false;
                                 }
                             }
                         });
@@ -501,10 +502,21 @@
                         return false;
                     }
                 }else{
-                    var choose=confirm("当前库存不足,是否预约？");
+                    var choose=confirm("当前库存不足,是否关注此书？关注后如有剩余会第一时间通知你。");
                     if(choose==true){
                         /*未完成 预约的ajax请求*/
-                        alert("预约成功");
+                        $.ajax({
+                            url:"/ajaxcontroller/markBook",
+                            data:{"userId":userId,"bookId":bookId},
+                            success:function (result) {
+                                if (result.extend.message=="success"){
+                                    alert("关注成功");
+                                } else{
+                                    alert("已关注此书，请勿重复操作！");
+                                    return false;
+                                }
+                            }
+                        });
                     }else{
                         return false;
                     }

@@ -149,4 +149,24 @@ public class UserService {
     public void addReply(Integer talkingId, Integer userId, String replyUserName, String reportArea, String date) {
         userDao.addReply(talkingId,userId,replyUserName,reportArea,date);
     }
+
+    public String isUserMarkThisBook(Integer userId, Integer bookId) {
+        return userDao.isUserMarkThisBook(userId,bookId);
+    }
+
+    public List<MarkList> getUserMarkList(Integer userId) {
+        return userDao.getUserMarkList(userId);
+    }
+
+    public Book getBookInfoById(Integer bookId) {
+        return userDao.getLibraryBookById(bookId);
+    }
+
+    public void saveMarkInfo(Integer userId, Integer bookId, String bookName, String date) {
+        userDao.saveMarkInfo(userId,bookId,bookName,date);
+    }
+
+    public void removeMarkByMarkId(Integer markId) {
+        userDao.removeMark(markId);
+    }
 }

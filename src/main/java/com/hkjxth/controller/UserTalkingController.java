@@ -41,6 +41,11 @@ public class UserTalkingController {
         String date=UtilClass.getDateToDatabase();
         String replyUserName=userService.getUserById(USERID).getUserName();
         userService.addReply(talkingId,USERID,replyUserName,reportArea,date);
+        Talking talking=userService.getTalkingById(talkingId);
+        Integer authorId=talking.getTalkingMasterId();
+        String talkingTitle=talking.getTalkingTitle();
+        Message message=new Message(null,authorId,"话题回复通知",UtilClass.getDateToDatabase(),UtilClass.getDate(),"你发布的话题‘"+talkingTitle+"'有了新的评论。");
+        userService.saveMessage(message);
         return JsonResult.success().add("message","success");
     }
 

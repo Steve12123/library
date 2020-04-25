@@ -17,7 +17,7 @@ public interface UserDao {
 
     Active selectNewBoard();
 
-    List<Book> getDayBook();
+    List<Book> getDayBook(String userSubject);
 
     boolean isNameHasRegister(String name);
 

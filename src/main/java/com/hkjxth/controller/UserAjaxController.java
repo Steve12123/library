@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -31,8 +32,16 @@ public class UserAjaxController {
     }
 
     @RequestMapping("/getDayBook")
-    public JsonResult getDayBook(){
-        List<Book> list=userService.getDayBook();
+    public JsonResult getDayBook(HttpSession session){
+        Integer userId= (Integer) session.getAttribute("userId");
+        String userSubject=userService.getUserById(userId).getUserSubject();
+        List<Book> list;
+        System.out.println("userSubject = " + userSubject);
+        if (userSubject==null||userSubject.equals("")){
+            list=userService.getDayBook(null);
+        }else{
+            list=userService.getDayBook(userSubject);
+        }
         return JsonResult.success().add("daybooklist",list);
     }
 

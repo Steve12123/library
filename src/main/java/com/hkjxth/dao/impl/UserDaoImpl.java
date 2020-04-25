@@ -75,12 +75,20 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<Book> getDayBook() {
+    public List<Book> getDayBook(String userSubject) {
         List<Book> list=null;
-        try{
-            list=jdbcTemplate.query("select * from book ORDER BY RAND() LIMIT 4",new BeanPropertyRowMapper<>(Book.class));
-        }catch (EmptyResultDataAccessException e){
-            return null;
+        if (userSubject==null){
+            try{
+                list=jdbcTemplate.query("select * from book ORDER BY RAND() LIMIT 4",new BeanPropertyRowMapper<>(Book.class));
+            }catch (EmptyResultDataAccessException e){
+                return null;
+            }
+        }else{
+            try{
+                list=jdbcTemplate.query("select * from book where book_subject=? ORDER BY RAND() LIMIT 4",new Object[]{userSubject},new BeanPropertyRowMapper<>(Book.class));
+            }catch (EmptyResultDataAccessException e){
+                return null;
+            }
         }
         return list;
     }

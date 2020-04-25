@@ -42,7 +42,7 @@ public class UtilClass {
 
     public static final String savePhoto(MultipartFile file, String divFileName){
         if(file.isEmpty()){
-            System.out.println("空");
+            System.out.println("文件名为空");
             return null;
         }else{
             String fileName=file.getOriginalFilename();

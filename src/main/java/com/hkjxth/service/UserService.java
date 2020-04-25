@@ -30,8 +30,8 @@ public class UserService {
         return userDao.selectNewBoard();
     }
 
-    public List<Book> getDayBook(){
-        return userDao.getDayBook();
+    public List<Book> getDayBook(String userSubject){
+        return userDao.getDayBook(userSubject);
     }
 
     public boolean isNameHasRegister(String name){

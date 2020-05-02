@@ -366,5 +366,16 @@ public class RootDaoImpl implements RootDao{
         jdbcTemplate.update("delete from lockuser where user_id=?",new Object[]{userId});
     }
 
+    @Override
+    public List<Board> getAllBoards() {
+        List<Board> list=null;
+        try{
+            list=jdbcTemplate.query("select * from board order by board_id desc", new BeanPropertyRowMapper<>(Board.class));
+        }catch (EmptyResultDataAccessException e){
+            return null;
+        }
+        return list;
+    }
+
 
 }

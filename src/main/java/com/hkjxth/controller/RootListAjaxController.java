@@ -295,4 +295,14 @@ public class RootListAjaxController {
         return JsonResult.success().add("message","success");
     }
 
+    @RequestMapping("/getAllAct")
+    public JsonResult getAllAct(){
+        List<Board> list=rootDao.getAllBoards();
+        if (list!=null){
+            return JsonResult.success().add("boardList",list);
+        }else{
+            return JsonResult.success().add("message","empty");
+        }
+    }
+
 }

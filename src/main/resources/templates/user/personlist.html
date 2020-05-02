@@ -100,8 +100,8 @@
     #show_date{
         position: absolute;
         top: 200px;
-        left: 740px;
-        width: 170px;
+        left: 690px;
+        width: 240px;
     }
 
     /*标题样式*/
@@ -369,7 +369,7 @@
                     var boardDate=boardInfo.date;
                     $("<p></p>").append(boardTitle).appendTo("#board_title");
                     $("<p></p>").append(boardBody).appendTo("#board_info");
-                    $("<span></span>").css("font-size","15px").append("发布于"+boardDate).appendTo("#show_date");
+                    $("<span></span>").css({"font-size":"15px"}).append("发布于"+boardDate).appendTo("#show_date");
                 }
             }
         });

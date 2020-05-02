@@ -65,4 +65,6 @@ public interface RootDao {
     List<Lock> selectLockUser();
 
     void reLockUser(Integer userId);
+
+    List<Board> getAllBoards();
 }

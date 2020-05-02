@@ -36,7 +36,6 @@ public class UserAjaxController {
         Integer userId= (Integer) session.getAttribute("userId");
         String userSubject=userService.getUserById(userId).getUserSubject();
         List<Book> list;
-        System.out.println("userSubject = " + userSubject);
         if (userSubject==null||userSubject.equals("")){
             list=userService.getDayBook(null);
         }else{

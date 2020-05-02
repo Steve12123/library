@@ -65,6 +65,33 @@
 <div>
     <h1 class="text-center" id="book_title"><a href="/mainroot.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
 </div>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">往期活动</h4>
+            </div>
+            <div class="modal-body">
+                <table border="1" class="table table-hover" style="width: 80%;" align="center">
+                    <thead align="center">
+                        <tr>
+                            <td width="250px">标题</td>
+                            <td>发布时间</td>
+                        </tr>
+                    </thead>
+                    <tbody id="board_body" align="center">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <p class="help-block" align="center">点击空白处关闭</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--导航栏-->
 <div id="title_list">
     <ul class="nav nav-pills nav-stacked">
@@ -107,7 +134,7 @@
                 </div>
                 <div class="form-group" align="center">
                     <button class="btn btn-default" onclick="act_form()">保存修改</button>
-                    <button class="btn btn-info" onclick="show">往期活动</button>
+                    <button class="btn btn-info" onclick="showAllAct()">往期活动</button>
                 </div>
             </form>
         </div>
@@ -164,6 +191,27 @@
             processData:false,
             success:function () {
                 alert("存储成功！");
+            }
+        });
+    }
+    
+    function showAllAct() {
+        $("#board_body").empty();
+        $.ajax({
+            url:"/rootajaxcontroller/getAllAct",
+            success:function (result) {
+                if (result.extend.message=="empty"||result.extend.boardList.length==0){
+                    alert("无任何记录。");
+                    return false;
+                } else{
+                    var boardList=result.extend.boardList;
+                    for(i=0;i<boardList.length;i++){
+                        var boardTitle=$("<td></td>").append(boardList[i].boardTitle);
+                        var boardDate=$("<td></td>").append(boardList[i].boardDate);
+                        $("<tr></tr>").append(boardTitle).append(boardDate).appendTo("#board_body");
+                    }
+                    $("#myModal").modal("show");
+                }
             }
         });
     }

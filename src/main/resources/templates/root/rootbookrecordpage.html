@@ -101,11 +101,13 @@
                     return false;
                 } else{
                     for (i=0;i<recordList.length;i++){
-                        var messageTitle=$("<td></td>").append(recordList[i].messageTitle);
-                        var messageDate=$("<td></td>").append(recordList[i].messageDate);
-                        var userId=$("<td></td>").append(recordList[i].userId);
-                        var messageBody=$("<td></td>").append(recordList[i].messageBody);
-                        $("<tr></tr>").append(messageTitle).append(messageDate).append(userId).append(messageBody).appendTo("#table_body");
+                        if(recordList[i].messageTitle!="话题回复通知"&&recordList[i].messageTitle!="操作确认"){
+                            var messageTitle=$("<td></td>").append(recordList[i].messageTitle);
+                            var messageDate=$("<td></td>").append(recordList[i].messageDate);
+                            var userId=$("<td></td>").append(recordList[i].userId);
+                            var messageBody=$("<td></td>").append(recordList[i].messageBody);
+                            $("<tr></tr>").append(messageTitle).append(messageDate).append(userId).append(messageBody).appendTo("#table_body");
+                        }
                     }
                 }
             }

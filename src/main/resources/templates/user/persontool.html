@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>图书管理系统-个人页面</title>
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="static/bootstrap/js/jquery-2.1.4.min.js"></script>
+<link href="static/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
+<script src="static/bootstrap/js/bootstrap.js"></script>
+
+<style>
+    /*图书管理系统 主题字*/
+    #book_title{
+        position: absolute;
+        top: 100px;
+        left: 45%;
+        color: #ffffff;
+    }
+
+    /*顶部 个人中心*/
+    #dropdown_list {
+        position: absolute;
+        top: 130px;
+        left: 70%;
+    }
+
+    /*图片下导航栏*/
+    #title_list {
+       position: absolute;
+        left: 30%;
+    }
+
+    /*导航栏的主内容*/
+    #title_list_body{
+        position: absolute;
+        top: 210px;
+        left: 15%;
+    }
+
+    /*去除ul的默认样式*/
+    #book_go_body ul{
+        list-style: none;
+    }
+
+    #translate_body{
+        position: relative;
+        width: 1000px;
+        left: 100px;
+        font-size: 30px;
+        font-family: NSimSun;
+        font-weight: bold;
+    }
+
+    #translate_title{
+        width: 150px;
+        margin-top: 10px;
+    }
+
+    #translate_info{
+        width: 950px;
+        height: 120px;
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+    #translate_btn{
+        position: relative;
+        margin-top: 10px;
+        width: 120px;
+        font-size: 15px;
+        left: 420px;
+    }
+    
+    #translate_reply{
+        width: 950px;
+        height: 120px;
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+</style>
+
+
+<body>
+
+    <img src="/static/images/long.jpg" style="width: 100%; height: auto">
+
+    <!-- 顶部搜索 -->
+
+
+
+<div>
+    <h1 class="text-center" id="book_title"><a href="/mainuser.html" style="text-decoration: none;color: #ffffff;">图书管理系统</a></h1>
+</div>
+
+<!-- 个人中心 -->
+<div id="dropdown_list">
+    <div class="dropdown">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            欢迎：[[${session.loginUser}]]
+            <span class="glyphicon glyphicon-menu-down"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <!--thymeleaf的条件下动态获取session中的值并以rest风格传递给后端-->
+            <li><a th:href="@{/userinfocontroller/userinfo{id}(id=${session.userId})}"><span class="glyphicon glyphicon-home"></span>个人信息</a></li>
+            <li><a th:href="@{/userinfocontroller/mywaiting{id}(id=${session.userId})}"><span class="glyphicon glyphicon-list"></span>我的书籍</a></li>
+            <li><a th:href="@{/userinfocontroller/myinformation{id}(id=${session.userId})}"><span class="glyphicon glyphicon-bullhorn"></span>消息通知</a></li>
+            <li><a href="/logout"><span class="glyphicon glyphicon-remove"></span>登出</a></li>
+        </ul>
+    </div>
+</div>
+
+<!--导航栏-->
+<div id="title_list">
+    <ul class="nav nav-pills">
+        <li id="page1" role="presentation"><a href="/mainuser.html">主页</a></li>
+        <li id="page2" role="presentation"><a href="/booklist.html">书库</a></li>
+        <li id="page3" role="presentation"><a href="/talking.html">论坛</a></li>
+        <li id="page4" role="presentation" class="active"><a href="/maintool.html">小工具</a></li>
+    </ul>
+</div>
+
+
+    <div id="title_list_body" class="tab-content">
+        <div class="tab-pane fade in active" id="index">
+            <div class="row" id="translate_body">
+                智能翻译
+                <form action="##" onsubmit="return false" method="post" id="translate_form">
+                <select class="form-control" id="translate_title" name="translateChoice">
+                    <option value="enToZh">英文 -> 中文</option>
+                    <option value="znToEn">中文 -> 英文</option>
+                </select>
+                <textarea class="form-control" id="translate_info" name="translateBody"></textarea>
+                <input type="submit" class="form-control btn btn-info" id="translate_btn" onclick="goTranslate()" value="翻  译" />
+                </form>
+                <textarea class="form-control" id="translate_reply" readonly></textarea>
+            </div>
+
+        </div>
+
+    </div>
+
+<script type="application/javascript">
+    function goTranslate(){
+        $.ajax({
+            url:"/toolController/translate",
+            data:$("#translate_form").serialize(),
+            resultType:"json",
+            success:function (result) {
+                var tranResult=result.extend.translateResult;
+                $("#translate_reply").empty();
+                $("#translate_reply").append(tranResult);
+            }
+        });
+    }
+</script>
+</body>
+</html>

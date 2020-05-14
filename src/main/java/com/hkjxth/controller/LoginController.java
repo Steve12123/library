@@ -40,14 +40,14 @@ public class LoginController {
         try{
             userId=Integer.valueOf(username);
         }catch (NumberFormatException e){
-            String errIgnoire="用户名非法";
+            String errIgnoire="账号非法";
             model.addAttribute("loginErrInfoToUser",errIgnoire);
             return "index";
         }
         if(isUser.equals("user")){
             User user=userService.selectUserByIdAndName(userId,password);
             if(user==null){
-                String errInfo="用户名或密码错误";
+                String errInfo="用户账号或密码错误";
                 model.addAttribute("loginErrInfoToUser",errInfo);
                 return "index";
             }else{
@@ -67,7 +67,7 @@ public class LoginController {
         }else{
             Root root=rootService.rootLogin(userId,password);
             if(root==null){
-                String errInfo="用户名或密码错误";
+                String errInfo="用户账号或密码错误";
                 model.addAttribute("loginErrInfoToUser",errInfo);
                 return "index";
             }else{
@@ -88,10 +88,10 @@ public class LoginController {
         registerName= UtilClass.ajaxUTF8(registerName);
         realName=UtilClass.ajaxUTF8(realName);
         if(registerName==null||registerName.equals("")){
-            return JsonResult.fail().add("errInfo","用户名非法");
+            return JsonResult.fail().add("errInfo","昵称非法");
         }else {
             if(registerName.length()>=11){
-                return JsonResult.fail().add("errInfo","用户名长度不能超过11位");
+                return JsonResult.fail().add("errInfo","昵称长度不能超过11位");
             }
             boolean result=userService.isNameHasRegister(registerName);
             if(!result){

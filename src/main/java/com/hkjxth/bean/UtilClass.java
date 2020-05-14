@@ -79,5 +79,25 @@ public class UtilClass {
         return URLDecoder.decode(name,"utf-8");
     }
 
+    /*百度翻译unicode转码代码*/
+    public static String decodeUnicode(String unicode){
+        int start = 0;
+        int end = 0;
+        final StringBuffer buffer = new StringBuffer();
+        while (start > -1) {
+            end = unicode.indexOf("\\u", start + 2);
+            String charStr = "";
+            if (end == -1) {
+                charStr = unicode.substring(start + 2, unicode.length());
+            } else {
+                charStr = unicode.substring(start + 2, end);
+            }
+            char letter = (char) Integer.parseInt(charStr, 16);
+            buffer.append(new Character(letter).toString());
+            start = end;
+        }
+        return buffer.toString();
+    }
+
 }
 

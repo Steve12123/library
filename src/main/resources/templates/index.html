@@ -91,11 +91,11 @@
             <div class="modal-body">
                 <form id="register_form" onsubmit="return false" action="##" method="post">
                     <div class="form-group">
-                        <label>请输入用户名：</label>
+                        <label>请给自己起一个昵称：</label>
                         <input type="text" class="form-control" placeholder="Name" name="registerName">
                     </div>
                     <div class="form-group">
-                        <label>请输入真实姓名：</label>
+                        <label>请输入你的真实姓名：</label>
                         <input type="text" class="form-control" placeholder="Name" name="registerRealName">
                     </div>
                     <div class="form-group">
@@ -149,7 +149,7 @@
     <div id="errInfo"><p style="color: red" th:text="${loginErrInfoToUser}" th:if="${not #strings.isEmpty(loginErrInfoToUser)}"></p></div>
 </div>
 <div id="register_btn">
-    <a href="#" data-toggle="modal" data-target="#myModal" style="color: orangered">注册新用户</a>
+    <a href="#" data-toggle="modal" data-target="#myModal" style="color: #4cff2c">注册新用户</a>
 </div>
 <script type="application/javascript">
     /*注册验证*/

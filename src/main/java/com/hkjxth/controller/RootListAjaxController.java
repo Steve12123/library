@@ -48,6 +48,9 @@ public class RootListAjaxController {
         subject=UtilClass.ajaxUTF8(subject);
         autherName=UtilClass.ajaxUTF8(autherName);
         bookname=UtilClass.ajaxUTF8(bookname);
+        if(subject.length()==0&&autherName.length()==0&&bookname.length()==0){
+            return JsonResult.fail().add("noResult","empty");
+        }
         List<Book> list=rootDao.selectBooksBySomething(subject,autherName,bookname);
         return JsonResult.success().add("list",list);
     }

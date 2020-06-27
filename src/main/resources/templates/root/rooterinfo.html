@@ -564,6 +564,10 @@
             type:"POST",
             data:$("#selectBookInfo").serialize(),
             success:function (result) {
+                if(result.extend.noResult=="empty"){
+                    alert("请编写查询条件。");
+                    return false;
+                }
                 for(i=0;i<selNum;i++){
                     $("#flag"+(count-1)).remove();
                 }

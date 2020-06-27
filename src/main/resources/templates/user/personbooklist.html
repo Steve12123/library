@@ -547,15 +547,15 @@
             type:"POST",
             data:$("#selectBookInfo").serialize(),
             success:function (result) {
+                if (result.extend.noResult=="empty"){
+                    alert("请写入查询条件");
+                    $("#table_info").remove();
+                    return false;
+                }
                 for(i=0;i<selNum;i++){
                     $("#flag"+(count-1)).remove();
                 }
                 var bookList=result.extend.list;
-                if (bookList==null){
-                    alert("请输入查询条件");
-                    $("#table_info").remove();
-                    return false;
-                }
                 selNum=bookList.length;
                 for(i=0;i<selNum;i++){
                     var bookIdTable=$("<td></td>").append(bookList[i].bookId);
